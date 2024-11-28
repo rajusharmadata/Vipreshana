@@ -1,0 +1,99 @@
+// ForgotPassword.jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const ForgotPassword = () => {
+    const [email, setEmail] = useState('');
+
+    const handleChange = (e) => {
+        setEmail(e.target.value);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post('http://localhost:5000/forgot-password', { email });
+            toast.success(response.data.message, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                icon: "✅",
+                style: {
+                    backgroundColor: '#28a745',
+                    color: '#fff',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    borderRadius: '12px',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                    textAlign: 'center',
+                    padding: '16px',
+                },
+                progressStyle: {
+                    backgroundColor: '#fff'
+                }
+            });
+        } catch (error) {
+            toast.error('❌ Failed to send reset link. Please try again.', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                style: {
+                    backgroundColor: '#dc3545',
+                    color: '#fff',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                    borderRadius: '12px',
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                    textAlign: 'center',
+                    padding: '16px',
+                },
+                progressStyle: {
+                    backgroundColor: '#fff'
+                }
+            });
+        }
+    };
+    return (
+        <div className="relative h-screen bg-cover bg-center" style={{ backgroundImage: "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?size=626&ext=jpg&ga=GA1.1.1861036275.1716800359&semt=ais_hybrid-rr-similar')" }}>
+            <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+                <div className="bg-white p-10 rounded-lg shadow-lg w-96">
+                    <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">Forgot Password</h1>
+                    <p className="text-md text-gray-600 text-center mb-6">Enter your email to receive a password reset link.</p>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">📧 Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                required
+                                value={email}
+                                onChange={handleChange}
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2"
+                                placeholder="Enter your email address"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-500 transition duration-300"
+                        >
+                            Send Reset Link
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <ToastContainer />
+        </div>
+    );
+};
+
+export default ForgotPassword;
