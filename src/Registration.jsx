@@ -39,7 +39,7 @@ const RegistrationForm = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/register', {
+            const response = await axios.post('https://vipreshana-3.onrender.com/register', {
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,

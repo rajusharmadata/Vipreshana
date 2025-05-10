@@ -25,7 +25,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/details'); // Adjusted API endpoint for fetching bookings
+      const response = await axios.get('https://vipreshana-3.onrender.com/api/details'); // Adjusted API endpoint for fetching bookings
       const usersData = response.data;
 
       setUsers(usersData);

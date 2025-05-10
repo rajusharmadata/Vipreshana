@@ -12,7 +12,7 @@ const Driver = () => {
     useEffect(() => {
         const fetchBookings = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/details');
+                const response = await axios.get('https://vipreshana-3.onrender.com/api/details');
                 setBookings(response.data); 
             } catch (error) {
                 console.error('Error fetching bookings:', error);

@@ -44,7 +44,7 @@ const User = () => {
 
         try {
             if (estimatedCost !== null) {
-                const response = await axios.post('http://localhost:5000/api/bookings', {
+                const response = await axios.post('https://vipreshana-3.onrender.com/api/bookings', {
                     name,
                     phone,
                     pickupLocation,
