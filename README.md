@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+<div align="center">
+  <img src="https://img.shields.io/badge/Vipreshana-RealTime%20Tracking%20Platform-blueviolet?style=for-the-badge" />
+  <br><br>
+  <img width="400" alt="Vipreshana Logo" src="image.png" />
+</div>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<hr>
 
-## Available Scripts
+<div align="center">
+  <img src="https://forthebadge.com/images/badges/built-by-developers.svg" />
+  <img src="https://forthebadge.com/images/badges/powered-by-responsibility.svg" />
+  <img src="https://forthebadge.com/images/badges/uses-brains.svg" />
+</div>
 
-In the project directory, you can run:
+<br/>
 
-### `npm start`
+<div align="center">
+  <table>
+    <thead>
+      <tr>
+        <td><strong>🌟 Stars</strong></td>
+        <td><strong>🍴 Forks</strong></td>
+        <td><strong>🐛 Issues</strong></td>
+        <td><strong>🔔 Pull Requests</strong></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://github.com/yourusername/Vipreshana/stargazers"><img src="https://img.shields.io/github/stars/yourusername/Vipreshana?style=for-the-badge&logo=github" /></a></td>
+        <td><a href="https://github.com/yourusername/Vipreshana/forks"><img src="https://img.shields.io/github/forks/yourusername/Vipreshana?style=for-the-badge&logo=git" /></a></td>
+        <td><img src="https://img.shields.io/github/issues-search/yourusername/Vipreshana?query=is:issue&style=for-the-badge&label=Issues" /></td>
+        <td><img src="https://img.shields.io/github/issues-search/yourusername/Vipreshana?query=is:pr&style=for-the-badge&label=Pull%20Requests" /></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Project Overview
 
-### `npm test`
+**Vipreshana** is a **real-time delivery and complaint tracking platform** that enables users and administrators to monitor service status, manage issues, and ensure transparency across the delivery lifecycle. With **live location tracking**, **complaint resolution workflow**, and **SMS notifications**, the platform is aimed at transforming operational efficiency and enhancing user trust.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 💡 Problem Statement
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Organizations and users often face challenges in tracking service requests, deliveries, and complaint resolutions. Lack of transparency, delayed updates, and manual tracking lead to dissatisfaction and inefficiency.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## ✅ Proposed Solution
 
-### `npm run eject`
+**Vipreshana** solves this by enabling:
+- Live **delivery/complaint status tracking** via location APIs.
+- Secure **OTP verification** to ensure valid users.
+- **Real-time SMS alerts** using Twilio.
+- Role-based dashboards for **users** and **officers/admins**.
+- A complete **end-to-end resolution lifecycle** with automated updates.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🔧 Tech Stack
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white" />
+</div>
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## ✨ Features
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- 📍 **Live Location Tracking** of deliveries and issue status
+- 🧑‍💻 **Role-based Portals**: Separate dashboards for users and officers
+- 🔐 **OTP Authentication** using Twilio for secure access
+- 📤 **Complaint Submission** with file upload (image/doc)
+- 📲 **SMS Notifications** for status updates
+- 📊 **Admin Dashboard** to view, assign, and resolve issues
+- 🧾 **Feedback System** for user satisfaction tracking
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 🧭 User Flow
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 🧍‍♂️ User
 
-### Analyzing the Bundle Size
+1. Register and verify mobile via OTP.
+2. Login and access dashboard.
+3. Submit delivery complaints with location and images.
+4. Track issue status live.
+5. Receive SMS when issue is updated/resolved.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 👮 Officer/Admin
 
-### Making a Progressive Web App
+1. Login via authorized email domain.
+2. View incoming complaints.
+3. Track complaint status with map and images.
+4. Mark issues as resolved to trigger SMS to user.
+5. Maintain operational dashboard.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 📦 Local Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Make sure you have **Node.js**, **npm**, and **PostgreSQL** installed.
 
-### Deployment
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/Vipreshana.git
+cd Vipreshana
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+# Install frontend and backend dependencies
+cd frontend
+npm install
+cd ../backend
+npm install
 
-### `npm run build` fails to minify
+# Set up environment variables
+cp .env.example .env
+# Add your DB credentials, Twilio keys, and secret tokens in .env
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Run backend server
+npm run start
+
+# Run frontend server
+cd ../frontend
+npm run dev
+
+# Visit the app at:
+# http://localhost:3000/
