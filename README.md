@@ -87,8 +87,25 @@ Organizations and users often face challenges in tracking service requests, deli
 
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/Vipreshana.git
+
+---
+
+## 📦 Local Setup Guide
+
+Want to run **Vipreshana** locally and contribute? Follow these simple steps! 🚀✨
+
+---
+
+### 🍴 1. Fork & Clone the Repository
+
+First, fork the repository to your GitHub account. Then, open your vscode terminal and run:
+
+```bash
+# Clone your forked repo
+git clone https://github.com/<your-username>/Vipreshana.git
+
+# Move into the project directory
+cd Vipreshana
 
 # Install Frontend  Dependencies
 npm install
@@ -101,4 +118,4 @@ npm install
 npm start
 
 # Visit the app at:
-# http://localhost:3000/
+http://localhost:3000/ 
