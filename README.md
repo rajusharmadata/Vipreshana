@@ -22,8 +22,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a href="https://github.com/sailaja-adapa/Vipreshana/stargazers"><img src="https://img.shields.io/github/stars/yourusername/Vipreshana?style=for-the-badge&logo=github" /></a></td>
-        <td><a href="https://github.com/sailaja-adapa/Vipreshana/forks"><img src="https://img.shields.io/github/forks/yourusername/Vipreshana?style=for-the-badge&logo=git" /></a></td>
+        <td><a href="https://github.com/sailaja-adapa/Vipreshana/stargazers"><img src="https://img.shields.io/github/stars/sailaja-adapa/Vipreshana?style=for-the-badge&logo=github" /></a></td>
+        <td><a href="https://github.com/sailaja-adapa/Vipreshana/forks"><img src="https://img.shields.io/github/forks/sailaja-adapa/Vipreshana?style=for-the-badge&logo=git" /></a></td>
         <td><img src="https://img.shields.io/github/issues-search/sailaja-adapa/Vipreshana?query=is:issue&style=for-the-badge&label=Issues" /></td>
         <td><img src="https://img.shields.io/github/issues-search/sailaja-adapa/Vipreshana?query=is:pr&style=for-the-badge&label=Pull%20Requests" /></td>
       </tr>
@@ -89,24 +89,16 @@ Organizations and users often face challenges in tracking service requests, deli
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/Vipreshana.git
-cd Vipreshana
 
-# Install frontend and backend dependencies
-cd frontend
-npm install
-cd ../backend
+# Install Frontend  Dependencies
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Add your DB credentials, Twilio keys, and secret tokens in .env
-
-# Run backend server
-npm run start
+# Install Backend Dependencies
+cd server
+npm install
 
 # Run frontend server
-cd ../frontend
-npm run dev
+npm start
 
 # Visit the app at:
 # http://localhost:3000/
