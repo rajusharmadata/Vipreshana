@@ -57,14 +57,13 @@ Organizations and users often face challenges in tracking service requests, deli
 
 ## 🔧 Tech Stack
 
-<div align="center">
-  <img src="banner.png" alt="Vipreshana Banner" width="600" /> </div> <div align="center"> 
-    <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" /> 
-    <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
-    <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
-    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" /> 
-    <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" />
-    <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white" /> 
+<div align="center"> 
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" />
+  <img src="https://img.shields.io/badge/React.js-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white" />
 </div>
 
 ---
@@ -78,29 +77,17 @@ Organizations and users often face challenges in tracking service requests, deli
 
 ---
 
-
-
-
 ---
 
 ## 📦 Local Setup
 
-
 ```bash
+Want to run Vipreshana locally and contribute? Follow these simple steps! 🚀✨
 
----
-
-## 📦 Local Setup Guide
-
-Want to run **Vipreshana** locally and contribute? Follow these simple steps! 🚀✨
-
----
-
-### 🍴 1. Fork & Clone the Repository
+# 🍴 1. Fork & Clone the Repository
 
 First, fork the repository to your GitHub account. Then, open your vscode terminal and run:
 
-```bash
 # Clone your forked repo
 git clone https://github.com/<your-username>/Vipreshana.git
 
