@@ -21,10 +21,10 @@
     </thead>
     <tbody>
       <tr>
-        <td><a href="https://github.com/sailaja-adapa/Vipreshana/stargazers"><img src="https://img.shields.io/github/stars/sailaja-adapa/Vipreshana?style=for-the-badge&logo=github" /></a></td>
-        <td><a href="https://github.com/sailaja-adapa/Vipreshana/forks"><img src="https://img.shields.io/github/forks/sailaja-adapa/Vipreshana?style=for-the-badge&logo=git" /></a></td>
-        <td><img src="https://img.shields.io/github/issues-search/sailaja-adapa/Vipreshana?query=is:issue&style=for-the-badge&label=Issues" /></td>
-        <td><img src="https://img.shields.io/github/issues-search/sailaja-adapa/Vipreshana?query=is:pr&style=for-the-badge&label=Pull%20Requests" /></td>
+        <td><a href="https://github.com/sailaja-adapa/vipreshana/stargazers"><img src="https://img.shields.io/github/stars/sailaja-adapa/vipreshana?style=for-the-badge&logo=github" /></a></td>
+        <td><a href="https://github.com/sailaja-adapa/vipreshana/forks"><img src="https://img.shields.io/github/forks/sailaja-adapa/vipreshana?style=for-the-badge&logo=git" /></a></td>
+        <td><img src="https://img.shields.io/github/issues-search/sailaja-adapa/vipreshana?query=is:issue&style=for-the-badge&label=Issues" /></td>
+        <td><img src="https://img.shields.io/github/issues-search/sailaja-adapa/vipreshana?query=is:pr&style=for-the-badge&label=Pull%20Requests" /></td>
       </tr>
     </tbody>
   </table>
