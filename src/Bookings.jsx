@@ -16,7 +16,7 @@ const UserBookings = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/api/bookings/${phone}`); // Call backend API with phone number
+                const response = await fetch(`https://vipreshana-3.onrender.com/api/bookings/${phone}`); // Call backend API with phone number
                 if (!response.ok) {
                     throw new Error('Failed to fetch bookings');
                 }

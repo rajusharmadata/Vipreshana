@@ -1,237 +1,271 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Toastify from 'toastify-js';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import "toastify-js/src/toastify.css"; // Import Toastify CSS
+import "toastify-js/src/toastify.css";
+
+function debounce(func, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+}
+
+const cityCoordinates = {
+  Mumbai: { lat: 19.0760, lon: 72.8777 },
+  Delhi: { lat: 28.6139, lon: 77.2090 },
+  Hyderabad: { lat: 17.3850, lon: 78.4867 },
+  Bangalore: { lat: 12.9716, lon: 77.5946 },
+  Chennai: { lat: 13.0827, lon: 80.2707 },
+  Kolkata: { lat: 22.5726, lon: 88.3639 },
+  Pune: { lat: 18.5204, lon: 73.8567 },
+  Ahmedabad: { lat: 23.0225, lon: 72.5714 },
+  Jaipur: { lat: 26.9124, lon: 75.7873 },
+};
+
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) *
+    Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+};
+
+const getBaseCost = (vehicleType) => {
+  const costMap = {
+    Car: 10,
+    Van: 15,
+    Bus: 20,
+  };
+  return costMap[vehicleType] || 10;
+};
+
+const showToast = (message, type) => {
+  const bgColor = type === 'success' ? "#4caf50" : "#f44336";
+  Toastify({
+    text: message,
+    duration: 3000,
+    close: true,
+    gravity: "top",
+    position: 'right',
+    style: {
+      background: bgColor,
+    },
+  }).showToast();
+};
 
 const User = () => {
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [pickupLocation, setPickupLocation] = useState('');
-    const [dropoffLocation, setDropoffLocation] = useState('');
-    const [vehicleType, setVehicleType] = useState('');
-    const [estimatedCost, setEstimatedCost] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [calculating, setCalculating] = useState(false); // New state for spinner
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [pickupLocation, setPickupLocation] = useState('');
+  const [dropoffLocation, setDropoffLocation] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
+  const [estimatedCost, setEstimatedCost] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [calculating, setCalculating] = useState(false);
+  const [cities, setCities] = useState([]);
 
-    const API_KEY = process.env.REACT_APP_OPENCAGE_API_KEY;
-    const navigate = useNavigate(); // Initialize navigate
+  useEffect(() => {
+    setCities(Object.keys(cityCoordinates));
+  }, []);
 
-    useEffect(() => {
-        const calculateCost = async () => {
-            if (pickupLocation && dropoffLocation && vehicleType) {
-                setCalculating(true); // Start showing spinner
-                try {
-                    const distance = await calculateDistance(pickupLocation, dropoffLocation);
-                    const cost = getBaseCost(vehicleType) * distance;
-                    setEstimatedCost(cost);
-                } catch (error) {
-                    setEstimatedCost(null);
-                } finally {
-                    setCalculating(false); // Stop showing spinner
-                }
-            } else {
-                setEstimatedCost(null);
-            }
-        };
+  // Debounced calculation function which accepts current inputs as arguments
+  const calculateCost = useCallback((pickup, dropoff, vehicle) => {
+    if (!pickup || !dropoff || !vehicle) {
+      setEstimatedCost(null);
+      return;
+    }
 
-        calculateCost();
-    }, [pickupLocation, dropoffLocation, vehicleType]);
+    setCalculating(true);
+    try {
+      const pickupCoords = cityCoordinates[pickup];
+      const dropoffCoords = cityCoordinates[dropoff];
 
-    const handleBooking = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+      if (!pickupCoords || !dropoffCoords) {
+        throw new Error("Invalid city locations");
+      }
 
-        try {
-            if (estimatedCost !== null) {
-                const response = await axios.post('https://vipreshana-3.onrender.com/api/bookings', {
-                    name,
-                    phone,
-                    pickupLocation,
-                    dropoffLocation,
-                    vehicleType,
-                    estimatedCost,
-                });
+      const distance = haversineDistance(
+        pickupCoords.lat,
+        pickupCoords.lon,
+        dropoffCoords.lat,
+        dropoffCoords.lon
+      );
 
-                if (response.status === 200) {
-                    showToast(`Thanks for booking! 💛`, 'success');
-                    resetForm();
-                    navigate('/LoginDashboard'); // Redirect to LoginDashboard
-                } else {
-                    showToast('Error: Unable to save booking.', 'error');
-                }
-            } else {
-                showToast('Error: Please select valid locations and vehicle type.', 'error');
-            }
-        } catch (error) {
-            showToast(`Error: ${error.response ? error.response.data.message : error.message}`, 'error');
-        } finally {
-            setLoading(false);
-        }
-    };
+      const cost = Math.round(getBaseCost(vehicle) * distance);
+      setEstimatedCost(cost);
+    } catch (error) {
+      setEstimatedCost(null);
+      showToast("Failed to estimate cost. Check locations.", "error");
+    } finally {
+      setCalculating(false);
+    }
+  }, []);
 
-    const calculateDistance = async (origin, destination) => {
-        const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=`;
-        const originEncoded = encodeURIComponent(origin);
-        const destinationEncoded = encodeURIComponent(destination);
+  // Create debounced version of calculateCost, stable across renders
+  const debouncedCalculateCost = useCallback(
+    debounce((pickup, dropoff, vehicle) => {
+      calculateCost(pickup, dropoff, vehicle);
+    }, 700),
+    [calculateCost]
+  );
 
-        const originResponse = await axios.get(`${geocodeUrl}${originEncoded}&key=${API_KEY}`);
-        const destinationResponse = await axios.get(`${geocodeUrl}${destinationEncoded}&key=${API_KEY}`);
+  // Call debounced calculate on changes
+  useEffect(() => {
+    debouncedCalculateCost(pickupLocation, dropoffLocation, vehicleType);
+  }, [pickupLocation, dropoffLocation, vehicleType, debouncedCalculateCost]);
 
-        if (originResponse.data.results.length > 0 && destinationResponse.data.results.length > 0) {
-            const originCoords = originResponse.data.results[0].geometry;
-            const destinationCoords = destinationResponse.data.results[0].geometry;
+  const resetForm = () => {
+    setName('');
+    setPhone('');
+    setPickupLocation('');
+    setDropoffLocation('');
+    setVehicleType('');
+    setEstimatedCost(null);
+  };
 
-            const distance = haversineDistance(
-                originCoords.lat, originCoords.lng,
-                destinationCoords.lat, destinationCoords.lng
-            );
-            return distance;
-        } else {
-            throw new Error("Could not calculate distance, please check your inputs.");
-        }
-    };
+  const handleBooking = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const haversineDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371;
-        const dLat = (lat2 - lat1) * (Math.PI / 180);
-        const dLon = (lon2 - lon1) * (Math.PI / 180);
-        const a = 
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    };
+  try {
+    if (estimatedCost !== null) {
+      const response = await fetch('https://vipreshana-3.onrender.com/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          pickupLocation,
+          dropoffLocation,
+          vehicleType,
+          estimatedCost,
+        }),
+      });
 
-    const getBaseCost = (vehicleType) => {
-        const costMap = {
-            Car: 10,
-            Van: 15,
-            Bus: 20
-        };
-        return costMap[vehicleType] || 10;
-    };
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to save booking');
+      }
 
-    const showToast = (message, type) => {
-        const bgColor = type === 'success' ? "#4caf50" : "#f44336"; 
-        Toastify({
-            text: message,
-            duration: 3000,
-            close: true,
-            gravity: "top",
-            position: 'right',
-            style: {
-                background: bgColor,
-            },
-        }).showToast();
-    };
+      showToast(`Thanks for booking! 💛`, 'success');
+      resetForm();
+    } else {
+      showToast('Error: Please select valid locations and vehicle type.', 'error');
+    }
+  } catch (error) {
+    showToast(`Error: ${error.message}`, 'error');
+  } finally {
+    setLoading(false);
+  }
+};
 
-    const resetForm = () => {
-        setName('');
-        setPhone('');
-        setPickupLocation('');
-        setDropoffLocation('');
-        setVehicleType('');
-        setEstimatedCost(null);
-    };
 
-    return (
-        <div 
-            className="min-h-screen bg-cover bg-center flex items-center justify-center p-5"
-            style={{ 
-                backgroundImage: `url('https://images.pexels.com/photos/681335/pexels-photo-681335.jpeg?auto=compress&cs=tinysrgb&w=600')`
-            }}
-        >
-            <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-10 w-full max-w-lg">
-                <h1 className="text-4xl font-bold text-center mb-8 text-blue-700">Book Your Vehicle</h1>
-                <form onSubmit={handleBooking}>
-                    <div className="mb-4">
-                        <label htmlFor="name" className="block text-gray-700">Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="phone" className="block text-gray-700">Phone</label>
-                        <input
-                            type="text"
-                            id="phone"
-                            name="phone"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="pickupLocation" className="block text-gray-700">Pickup Location</label>
-                        <input
-                            type="text"
-                            id="pickupLocation"
-                            name="pickupLocation"
-                            value={pickupLocation}
-                            onChange={(e) => setPickupLocation(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="dropoffLocation" className="block text-gray-700">Dropoff Location</label>
-                        <input
-                            type="text"
-                            id="dropoffLocation"
-                            name="dropoffLocation"
-                            value={dropoffLocation}
-                            onChange={(e) => setDropoffLocation(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="vehicleType" className="block text-gray-700">Vehicle Type</label>
-                        <select
-                            id="vehicleType"
-                            name="vehicleType"
-                            value={vehicleType}
-                            onChange={(e) => setVehicleType(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                            required
-                        >
-                            <option value="">Select Vehicle Type</option>
-                            <option value="Car">Car</option>
-                            <option value="Van">Van</option>
-                            <option value="Bus">Bus</option>
-                        </select>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="estimatedCost" className="block text-gray-700">Estimated Cost (₹)</label>
-                        <input
-                            type="text"
-                            id="estimatedCost"
-                            name="estimatedCost"
-                            value={estimatedCost !== null ? estimatedCost : ''}
-                            readOnly
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-200"
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={loading || calculating}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-                    >
-                        {loading ? 'Booking...' : 'Book Now'}
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
+  return (
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center p-5"
+      style={{
+        backgroundImage: `url('https://images.pexels.com/photos/681335/pexels-photo-681335.jpeg?auto=compress&cs=tinysrgb&w=600')`,
+      }}
+    >
+      <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-10 w-full max-w-lg">
+        <h1 className="text-4xl font-bold text-center mb-8 text-blue-700">Book Your Vehicle</h1>
+        <form onSubmit={handleBooking}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700">Name</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="phone" className="block text-gray-700">Phone</label>
+            <input
+              type="text"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="pickupLocation" className="block text-gray-700">Pickup Location</label>
+            <select
+              id="pickupLocation"
+              value={pickupLocation}
+              onChange={(e) => setPickupLocation(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              required
+            >
+              <option value="">Select Pickup Location</option>
+              {cities.map((city, index) => (
+                <option key={index} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="dropoffLocation" className="block text-gray-700">Dropoff Location</label>
+            <select
+              id="dropoffLocation"
+              value={dropoffLocation}
+              onChange={(e) => setDropoffLocation(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              required
+            >
+              <option value="">Select Dropoff Location</option>
+              {cities.map((city, index) => (
+                <option key={index} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="vehicleType" className="block text-gray-700">Vehicle Type</label>
+            <select
+              id="vehicleType"
+              value={vehicleType}
+              onChange={(e) => setVehicleType(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              required
+            >
+              <option value="">Select Vehicle Type</option>
+              <option value="Car">Car</option>
+              <option value="Van">Van</option>
+              <option value="Bus">Bus</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            {calculating ? (
+              <div className="text-center text-blue-500">Calculating Cost...</div>
+            ) : (
+              <div className="text-center font-semibold text-xl text-green-600">
+                Estimated Cost: ₹{estimatedCost !== null ? estimatedCost : 0}
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg"
+              disabled={loading || calculating}
+            >
+              {loading ? 'Booking...' : 'Book Now'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default User;

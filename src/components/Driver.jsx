@@ -8,7 +8,6 @@ const Driver = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [jobStatus, setJobStatus] = useState('');
     const [loading, setLoading] = useState(true);
-
     useEffect(() => {
         const fetchBookings = async () => {
             try {

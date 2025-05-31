@@ -33,7 +33,7 @@ const RegistrationForm = () => {
         }
 
         // Check if the user is registering as an admin
-        if (formData.role === 'admin' && !formData.email.endsWith('@atlan.com')) {
+        if (formData.role === 'admin' && !formData.email.endsWith('@svecw.edu.in')) {
             toast.error('Please enter a valid email for admin registration.');
             return;
         }
