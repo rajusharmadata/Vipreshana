@@ -127,8 +127,7 @@ const User = () => {
     setVehicleType('');
     setEstimatedCost(null);
   };
-
-  const handleBooking = async (e) => {
+const handleBooking = async (e) => {
   e.preventDefault();
   setLoading(true);
 

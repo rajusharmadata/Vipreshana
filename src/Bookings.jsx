@@ -80,7 +80,7 @@ const UserBookings = () => {
                                     <td className="px-6 py-4 border border-black">{booking.dropoffLocation}</td>
                                     <td className="px-6 py-4 border border-black">{booking.vehicleType}</td>
                                     <td className="px-6 py-4 border border-black font-semibold text-gray-800">
-                                        {booking.estimatedCost.toFixed(2)} USD
+                                        {booking.estimatedCost.toFixed(2)} INR
                                     </td>
                                     <td className="px-6 py-4 border border-black">{new Date(booking.bookingDate).toLocaleString()}</td>
                                     <td className="px-6 py-4 border border-black">

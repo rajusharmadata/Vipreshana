@@ -30,7 +30,7 @@ const Driver = () => {
             return;
         }
         try {
-            await axios.put(`http://localhost:5000/api/details/${booking._id}/accept`, {
+            await axios.put(`https://vipreshana-3.onrender.com/api/details/${booking._id}/accept`, {
                 accepted_booking: 'accepted'
             });
             setAcceptedBooking(booking);
@@ -61,7 +61,7 @@ const Driver = () => {
     const handleUpdateStatus = async (status) => {
         setJobStatus(status);
         try {
-            await axios.put(`http://localhost:5000/api/details/${acceptedBooking._id}/status`, { status });
+            await axios.put(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}/status`, { status });
             setAcceptedBooking(prevBooking => ({ ...prevBooking, status }));
             setBookings(prevBookings =>
                 prevBookings.map(booking =>
@@ -81,16 +81,16 @@ const Driver = () => {
     
         try {
             // Mark as delivered
-            await axios.put(`http://localhost:5000/api/details/${acceptedBooking._id}/status`, { status: 'Delivered' });
+            await axios.put(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}/status`, { status: 'Delivered' });
             
             // Send delivery message
-            await axios.post('http://localhost:5000/api/details/deliver', {
+            await axios.post('https://vipreshana-3.onrender.com/api/details/deliver', {
                 phone: acceptedBooking.phone,
                 message: `Dear ${acceptedBooking.name}, Your goods have been delivered from ${acceptedBooking.pickupLocation} to ${acceptedBooking.dropoffLocation} safely.`
             });
     
             // Delete the booking from the database
-            await axios.delete(`http://localhost:5000/api/details/${acceptedBooking._id}`);
+            await axios.delete(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}`);
     
             // Update state to remove the delivered booking
             setBookings(prevBookings => prevBookings.filter(booking => booking._id !== acceptedBooking._id));
