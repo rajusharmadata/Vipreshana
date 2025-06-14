@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from './context/ThemeContext';
+
 
 const UserBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     useEffect(() => {
         const fetchUserBookings = async () => {
@@ -38,64 +41,83 @@ const UserBookings = () => {
 
     return (
         <div
-            className="min-h-screen flex flex-col items-center justify-center"
+            className={`min-h-screen flex flex-col items-center justify-center transition-all duration-300 ${isDarkMode ? 'brightness-75' : 'brightness-100'}`}
             style={{
-                backgroundImage: 'url(https://images.pexels.com/photos/258510/pexels-photo-258510.jpeg?auto=compress&cs=tinysrgb&w=600)',
+                backgroundImage: isDarkMode 
+                    ? 'url(https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&w=600)'
+                    : 'url(https://images.pexels.com/photos/258510/pexels-photo-258510.jpeg?auto=compress&cs=tinysrgb&w=600)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}
         >
-            <div className="backdrop-blur-sm bg-white bg-opacity-70 rounded-lg p-8 shadow-xl max-w-7xl w-full border-4 border-black overflow-x-auto">
-                <h1 className="text-4xl font-extrabold text-center text-gray-900 mb-6">Your Bookings</h1>
+            {/* Theme Toggle Button */}
+            <button
+                onClick={toggleTheme}
+                className={`fixed top-4 right-4 z-10 p-3 rounded-full shadow-lg transition-all duration-300 ${
+                    isDarkMode 
+                        ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
+                        : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
+                }`}
+                title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+            >
+                {isDarkMode ? '☀️' : '🌙'}
+            </button>
+
+            <div className={`backdrop-blur-sm ${isDarkMode ? 'bg-gray-800 bg-opacity-80' : 'bg-white bg-opacity-70'} rounded-lg p-8 shadow-xl max-w-7xl w-full border-4 ${isDarkMode ? 'border-gray-600' : 'border-black'} overflow-x-auto transition-all duration-300`}>
+                <h1 className={`text-4xl font-extrabold text-center ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-6`}>
+                    Your Bookings
+                </h1>
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                 {bookings.length === 0 ? (
-                    <p className="text-center text-gray-700">No bookings found.</p>
+                    <p className={`text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        No bookings found.
+                    </p>
                 ) : (
-                    <table className="w-full table-auto text-left border-separate border-spacing-y-2 border-2 border-black">
+                    <table className={`w-full table-auto text-left border-separate border-spacing-y-2 border-2 ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>
                         <thead>
-                            <tr className="bg-gray-300 bg-opacity-80 text-gray-800">
-                                <th className="px-6 py-4 border border-black">#</th>
-                                <th className="px-6 py-4 border border-black">Name</th>
-                                <th className="px-6 py-4 border border-black">Phone</th>
-                                <th className="px-6 py-4 border border-black">Pickup Location</th>
-                                <th className="px-6 py-4 border border-black">Drop-off Location</th>
-                                <th className="px-6 py-4 border border-black">Vehicle Type</th>
-                                <th className="px-6 py-4 border border-black">Cost</th>
-                                <th className="px-6 py-4 border border-black">Created At</th>
-                                <th className="px-6 py-4 border border-black">Status</th>
-                                <th className="px-6 py-4 border border-black">Track</th>
+                            <tr className={`${isDarkMode ? 'bg-gray-700 bg-opacity-80 text-gray-200' : 'bg-gray-300 bg-opacity-80 text-gray-800'}`}>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>#</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Name</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Phone</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Pickup Location</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Drop-off Location</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Vehicle Type</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Cost</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Created At</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Status</th>
+                                <th className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>Track</th>
                             </tr>
                         </thead>
                         <tbody>
                             {bookings.map((booking, index) => (
                                 <tr
                                     key={booking._id}  // Assuming MongoDB ObjectId is used
-                                    className="bg-white bg-opacity-90 border-b shadow-lg hover:shadow-xl transition-transform duration-300 transform hover:scale-105 rounded-lg"
-                                    style={{ borderBottom: '2px solid black' }}
+                                    className={`${isDarkMode ? 'bg-gray-800 bg-opacity-90' : 'bg-white bg-opacity-90'} border-b shadow-lg hover:shadow-xl transition-transform duration-300 transform hover:scale-105 rounded-lg`}
+                                    style={{ borderBottom: isDarkMode ? '2px solid #4B5563' : '2px solid black' }}
                                 >
-                                    <td className="px-6 py-4 border border-black font-semibold">{index + 1}</td>
-                                    <td className="px-6 py-4 border border-black">{booking.name}</td>
-                                    <td className="px-6 py-4 border border-black">{booking.phone}</td>
-                                    <td className="px-6 py-4 border border-black">{booking.pickupLocation}</td>
-                                    <td className="px-6 py-4 border border-black">{booking.dropoffLocation}</td>
-                                    <td className="px-6 py-4 border border-black">{booking.vehicleType}</td>
-                                    <td className="px-6 py-4 border border-black font-semibold text-gray-800">
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{index + 1}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{booking.name}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{booking.phone}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{booking.pickupLocation}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{booking.dropoffLocation}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{booking.vehicleType}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                                         {booking.estimatedCost.toFixed(2)} INR
                                     </td>
-                                    <td className="px-6 py-4 border border-black">{new Date(booking.bookingDate).toLocaleString()}</td>
-                                    <td className="px-6 py-4 border border-black">
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>{new Date(booking.bookingDate).toLocaleString()}</td>
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'}`}>
                                         <span
                                             className={`font-bold ${booking.status === 'pending' ? 'text-red-500' : 'text-green-500'}`}
                                         >
                                             {booking.status === 'pending' ? 'Pending' : booking.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 border border-black text-center">
+                                    <td className={`px-6 py-4 border ${isDarkMode ? 'border-gray-600' : 'border-black'} text-center`}>
                                         {booking.status === 'pending' ? (
                                             <span className="text-yellow-500 font-bold">Pending</span>
                                         ) : (
                                             <button
-                                                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+                                                className={`${isDarkMode ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-500 hover:bg-blue-600'} text-white py-2 px-4 rounded transition duration-300`}
                                                 onClick={() => handleTrackDriver(booking._id)} // Call the new function to handle tracking
                                             >
                                                 Track Driver
