@@ -4,13 +4,14 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { useTheme } from './context/ThemeContext'; // Adjust the import path as necessary
 const Login = () => {
     const [formData, setFormData] = useState({
         phone: '',
         password: '',
     });
     const navigate = useNavigate();
+    const { theme, toggleTheme } = useTheme();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -80,55 +81,104 @@ const Login = () => {
         }
     };
 
+    const isDark = theme === 'dark';
+
     return (
         <div
-            className="relative h-screen bg-cover bg-center"
+            className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
+                isDark ? 'brightness-75' : 'brightness-100'
+            }`}
             style={{ backgroundImage: "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?size=626&ext=jpg&ga=GA1.1.1861036275.1716800359&semt=ais_hybrid-rr-similar')" }}
         >
-            <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-                <div className="bg-white p-10 rounded-lg shadow-lg w-96">
-                    <h1 className="text-4xl font-bold text-center text-blue-600 mb-2">Welcome Back!</h1>
-                    <p className="text-md text-gray-600 text-center mb-6">Please enter your credentials to login.</p>
+            <div className={`absolute inset-0 ${isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'} flex items-center justify-center transition-all duration-300`}>
+                {/* Theme Toggle Button */}
+                <button
+                    onClick={toggleTheme}
+                    className={`absolute top-6 right-6 p-3 rounded-full transition-all duration-300 ${
+                        isDark 
+                            ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
+                            : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
+                    }`}
+                    aria-label="Toggle theme"
+                >
+                    {isDark ? '☀️' : '🌙'}
+                </button>
+
+                <div className={`p-10 rounded-lg shadow-lg w-96 transition-all duration-300 ${
+                    isDark 
+                        ? 'bg-gray-800 text-white border border-gray-700' 
+                        : 'bg-white text-gray-900'
+                }`}>
+                    <h1 className={`text-4xl font-bold text-center mb-2 transition-colors duration-300 ${
+                        isDark ? 'text-blue-400' : 'text-blue-600'
+                    }`}>Welcome Back!</h1>
+                    <p className={`text-md text-center mb-6 transition-colors duration-300 ${
+                        isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}>Please enter your credentials to login.</p>
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">📞 Phone</label>
+                            <label htmlFor="phone" className={`block text-sm font-medium transition-colors duration-300 ${
+                                isDark ? 'text-gray-300' : 'text-gray-700'
+                            }`}>📞 Phone</label>
                             <input
                                 type="tel"
                                 id="phone"
                                 name="phone"
                                 required
                                 onChange={handleChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2"
+                                className={`mt-1 block w-full border rounded-md shadow-sm p-2 transition-all duration-300 ${
+                                    isDark 
+                                        ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400 focus:ring-opacity-30' 
+                                        : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                                }`}
                                 placeholder="Enter your phone number"
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">🔒 Password</label>
+                            <label htmlFor="password" className={`block text-sm font-medium transition-colors duration-300 ${
+                                isDark ? 'text-gray-300' : 'text-gray-700'
+                            }`}>🔒 Password</label>
                             <input
                                 type="password"
                                 id="password"
                                 name="password"
                                 required
                                 onChange={handleChange}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 p-2"
+                                className={`mt-1 block w-full border rounded-md shadow-sm p-2 transition-all duration-300 ${
+                                    isDark 
+                                        ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400 focus:ring-opacity-30' 
+                                        : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
+                                }`}
                                 placeholder="Enter your password"
                             />
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-500 transition duration-300"
+                            className={`w-full font-semibold py-2 rounded-lg transition-all duration-300 ${
+                                isDark
+                                    ? 'bg-blue-500 hover:bg-blue-400 text-white'
+                                    : 'bg-blue-600 hover:bg-blue-500 text-white'
+                            }`}
                         >
                             Login
                         </button>
                     </form>
-                    <p className="text-center text-sm text-gray-600 mt-4">
+                    <p className={`text-center text-sm mt-4 transition-colors duration-300 ${
+                        isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
                         Don't you have an account?{' '}
-                        <Link to="/register" className="text-blue-600 font-semibold hover:underline">
+                        <Link to="/register" className={`font-semibold hover:underline transition-colors duration-300 ${
+                            isDark ? 'text-blue-400' : 'text-blue-600'
+                        }`}>
                             Register
                         </Link>
                     </p>
-                    <p className="text-center text-sm text-gray-600 mt-2">
-                        <Link to="/forgot-password" className="text-blue-600 font-semibold hover:underline">
+                    <p className={`text-center text-sm mt-2 transition-colors duration-300 ${
+                        isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                        <Link to="/forgot-password" className={`font-semibold hover:underline transition-colors duration-300 ${
+                            isDark ? 'text-blue-400' : 'text-blue-600'
+                        }`}>
                             Forgot Password?
                         </Link>
                     </p>

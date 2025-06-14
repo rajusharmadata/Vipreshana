@@ -11,9 +11,10 @@ import LoginDashboard from './LoginDashboard';
 import Bookings from './Bookings';
 import ResetPassword from './ResetPassword';
 import AdminDashboard from './AdminDashboard';
-
+import { ThemeProvider } from './context/ThemeContext';
 function App() {
     return (
+        <ThemeProvider>
         <Router>
             <Routes>
                 <Route path="/user" element={<User />} />
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/logindashboard" element={<LoginDashboard />} /> 
             </Routes>
         </Router>
+        </ThemeProvider>
     );
 }
 
