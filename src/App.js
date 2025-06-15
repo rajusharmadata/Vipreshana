@@ -16,33 +16,31 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
-return (
-<ThemeProvider>
-<Router>
-<Routes>
-<Route path="/user" element={<User />} />
-<Route path="/driver" element={<Driver />} />
-<Route path="/" element={<Dashboard />} />
-<Route path="/reset-password" element={<ResetPassword />} />
-<Route path="/location" element={<Location />} />
-<Route path="/bookings" element={<Bookings />} />
-<Route path="/admin" element={<AdminDashboard />} />
-<Route path="/register" element={<Registration />} />
-<Route path="/login" element={<Login />} />
-<Route path="/forgot-password" element={<ForgotPassword />} />
-<Route path="/logindashboard" element={<LoginDashboard />} />
-</Routes>
-
-php-template
-Copy
-Edit
-    <ToastContainer
-      position="top-right"
-      autoClose={3000}
-      pauseOnHover
-      draggable
-    />
-  </Router>
-</ThemeProvider>
-);
+  return (
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/user" element={<User />} />
+          <Route path="/driver" element={<Driver />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/location" element={<Location />} />
+          <Route path="/bookings" element={<Bookings />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/register" element={<Registration />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/logindashboard" element={<LoginDashboard />} />
+        </Routes>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          pauseOnHover
+          draggable
+        />
+      </Router>
+    </ThemeProvider>
+  );
 }
+
+export default App;
