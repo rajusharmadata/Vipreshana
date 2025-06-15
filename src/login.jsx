@@ -1,4 +1,4 @@
-// Login.jsx
+//login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ const Login = () => {
             // Store phone number in local storage
             localStorage.setItem('userPhone', formData.phone);
 
-            // Display success toast message
+            // Show success toast
             toast.success(`🎉 ${message}`, {
                 position: "top-center",
                 autoClose: 3000,
@@ -50,7 +50,7 @@ const Login = () => {
                 }
             });
 
-            // Redirect after a delay based on user role
+            // Navigate after a delay
             setTimeout(() => {
                 navigate(redirectUrl);
             }, 3000);
@@ -83,7 +83,7 @@ const Login = () => {
     return (
         <div
             className="relative h-screen bg-cover bg-center"
-            style={{ backgroundImage: "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?size=626&ext=jpg&ga=GA1.1.1861036275.1716800359&semt=ais_hybrid-rr-similar')" }}
+            style={{ backgroundImage: "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg')" }}
         >
             <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
                 <div className="bg-white p-10 rounded-lg shadow-lg w-96">
