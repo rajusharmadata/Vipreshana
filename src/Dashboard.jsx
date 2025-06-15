@@ -40,9 +40,9 @@ const Dashboard = () => {
                     Book, track, and manage your shipments seamlessly.
                 </p>
                 
-                <div className="flex space-x-4">
+                 <div className="flex space-x-4">
                     <button
-                        className={`px-6 py-3 rounded-lg shadow-md transition-all duration-300 ${
+                        className={`px-6 py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 ${
                             isDark
                                 ? 'bg-gray-800 text-white border border-gray-600 hover:bg-gray-700'
                                 : 'bg-white text-black hover:bg-gray-200'
@@ -52,7 +52,7 @@ const Dashboard = () => {
                         Register
                     </button>
                     <button
-                        className={`px-6 py-3 rounded-lg shadow-md transition-all duration-300 ${
+                        className={`px-6 py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 ${
                             isDark
                                 ? 'bg-blue-500 text-white hover:bg-blue-400'
                                 : 'bg-blue-600 text-white hover:bg-blue-700'
