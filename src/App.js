@@ -11,6 +11,7 @@ import LoginDashboard from './LoginDashboard';
 import Bookings from './Bookings';
 import ResetPassword from './ResetPassword';
 import AdminDashboard from './AdminDashboard';
+import Contact from './Contact';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeContext';
@@ -31,6 +32,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/logindashboard" element={<LoginDashboard />} />
+          <Route path="/contact" element={<Contact/>} />
         </Routes>
         <ToastContainer
           position="top-right"

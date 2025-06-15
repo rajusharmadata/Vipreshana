@@ -27,6 +27,15 @@ const Dashboard = () => {
                     {isDark ? '☀️' : '🌙'}
                 </button>
 
+                {/* Contact Button  */}
+                <a
+                  href="/contact"
+                  className="absolute top-6 right-24 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
+                  style={{textDecoration: 'none'}}
+                >
+                  Contact
+                </a>
+
                 <h1 className={`text-4xl md:text-5xl font-bold mb-4 transition-colors duration-300 ${
                     isDark ? 'text-blue-400' : 'text-white'
                 }`}>

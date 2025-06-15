@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const figlet = require('figlet');
 const Configs = require('./configs/Configs');
 const connectMongoDB = require('./Databases/ConnectDB');
 const Controllers = require('./Controllers/index.controllers');
@@ -43,9 +44,24 @@ app.post('/api/details/deliver', Controllers.SendBookingSMSController);
 // Start the server
 const PORT = Configs.PORT || 5000;
 app.listen(PORT, (err) => {
-    if(err) {
-        console.log(`Server connection error.`);
-    }else {
-        console.log(`Server running on port ${PORT}`);
+    if (err) {
+        // console.log(`Server connection error.`);
+        console.log(err);
+        figlet(`S e r v e r  c o n n e c t i o n  e r r o r`, (err, data) => {
+            if (err) {
+                console.log("Figlet Error.");
+            } else {
+                console.log(data);
+            }
+        });
+    } else {
+        // console.log(`Server running on port ${PORT}`);
+        figlet(`S e r v e r  r u n n i n g  o n  p o r t :  ${PORT}`, (err, data) => {
+            if (err) {
+                console.log("Figlet Error.");
+            } else {
+                console.log(data);
+            }
+        });
     }
 });
