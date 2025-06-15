@@ -28,7 +28,8 @@ const bookingSchema = new mongoose.Schema({
         type: String
     },
     estimatedCost: {
-        type: Number
+        type: Number,
+        min: [0, 'Estimated cost must be a positive number']
     },
     bookingDate: {
         type: Date,

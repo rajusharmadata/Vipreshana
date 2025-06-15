@@ -1,10 +1,17 @@
 const Models = require("../../Models/index.models");
 const bcrypt = require('bcryptjs');
 
+// Sanitization function
+const sanitize = (str) => {
+  return str?.trim().replace(/[<>"'\/]/g, '');
+};
+
 const userLoginController = async (req, res) => {
-    const { phone, password } = req.body;
+    let  { phone, password } = req.body;
 
     try {
+        phone = sanitize(phone);
+
         const user = await Models.UserSchema.findOne({ phone });
         if (!user) {
             return res.status(400).json({ error: "User not found" });

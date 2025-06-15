@@ -22,7 +22,7 @@ const registrationSchema = new mongoose.Schema({
             type: String,
             required: true,
             enum: {
-                values: ['User', 'Admin', 'Driver'],
+                values: ['user', 'admin', 'driver'],
                 message: '{VALUE} is not a valid role',
             },
             default: 'User',
