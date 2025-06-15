@@ -14,27 +14,39 @@ const Dashboard = () => {
         >
             <div className={`absolute inset-0 ${isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-50'} flex flex-col justify-center items-center text-white transition-all duration-300`}>
                 
-                {/* Theme Toggle Button */}
-                <button
-                    onClick={toggleTheme}
-                    className={`absolute top-6 right-6 p-3 rounded-full transition-all duration-300 ${
-                        isDark 
-                            ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
-                            : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                    }`}
-                    aria-label="Toggle theme"
-                >
-                    {isDark ? '☀️' : '🌙'}
-                </button>
+                {/* Navigation Bar at the top right */}
+                <div className="absolute top-6 right-6 flex items-center space-x-4">
+                  {/* About Us Button  */}
+                  <a
+                    href="/about"
+                    className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
+                    style={{textDecoration: 'none'}}
+                  >
+                    About Us
+                  </a>
 
-                {/* Contact Button  */}
-                <a
-                  href="/contact"
-                  className="absolute top-6 right-24 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
-                  style={{textDecoration: 'none'}}
-                >
-                  Contact
-                </a>
+                  {/* Contact Button  */}
+                  <a
+                    href="/contact"
+                    className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
+                    style={{textDecoration: 'none'}}
+                  >
+                    Contact
+                  </a>
+
+                  {/* Theme Toggle Button */}
+                  <button
+                      onClick={toggleTheme}
+                      className={`p-3 rounded-full transition-all duration-300 ${
+                          isDark 
+                              ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
+                              : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
+                      }`}
+                      aria-label="Toggle theme"
+                  >
+                      {isDark ? '☀️' : '🌙'}
+                  </button>
+                </div>
 
                 <h1 className={`text-4xl md:text-5xl font-bold mb-4 transition-colors duration-300 ${
                     isDark ? 'text-blue-400' : 'text-white'
