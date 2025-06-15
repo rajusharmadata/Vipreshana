@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import Toastify from 'toastify-js';
-import "toastify-js/src/toastify.css";
+import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import { Sun, Moon } from 'lucide-react';
+import {useTheme} from '../context/ThemeContext'
+
 
 function debounce(func, delay) {
   let timeout;
@@ -23,7 +24,7 @@ const cityCoordinates = {
 };
 
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
   const a =
@@ -45,20 +46,25 @@ const getBaseCost = (vehicleType) => {
 };
 
 const showToast = (message, type) => {
-  const bgColor = type === 'success' ? "#4caf50" : "#f44336";
-  Toastify({
-    text: message,
-    duration: 3000,
-    close: true,
-    gravity: "top",
-    position: 'right',
-    style: {
-      background: bgColor,
-    },
-  }).showToast();
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background: ${type === 'success' ? '#4caf50' : '#f44336'};
+    color: white;
+    border-radius: 4px;
+    z-index: 1000;
+    font-family: sans-serif;
+  `;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => document.body.removeChild(toast), 3000);
 };
 
 const User = () => {
+  const { theme, toggleTheme } = useTheme();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
@@ -73,7 +79,6 @@ const User = () => {
     setCities(Object.keys(cityCoordinates));
   }, []);
 
-  // Debounced calculation function which accepts current inputs as arguments
   const calculateCost = useCallback((pickup, dropoff, vehicle) => {
     if (!pickup || !dropoff || !vehicle) {
       setEstimatedCost(null);
@@ -106,7 +111,6 @@ const User = () => {
     }
   }, []);
 
-  // Create debounced version of calculateCost, stable across renders
   const debouncedCalculateCost = useCallback(
     debounce((pickup, dropoff, vehicle) => {
       calculateCost(pickup, dropoff, vehicle);
@@ -114,7 +118,6 @@ const User = () => {
     [calculateCost]
   );
 
-  // Call debounced calculate on changes
   useEffect(() => {
     debouncedCalculateCost(pickupLocation, dropoffLocation, vehicleType);
   }, [pickupLocation, dropoffLocation, vehicleType, debouncedCalculateCost]);
@@ -127,85 +130,130 @@ const User = () => {
     setVehicleType('');
     setEstimatedCost(null);
   };
-const handleBooking = async (e) => {
-  e.preventDefault();
-  setLoading(true);
 
-  try {
-    if (estimatedCost !== null) {
-      const response = await fetch('https://vipreshana-3.onrender.com/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          phone,
-          pickupLocation,
-          dropoffLocation,
-          vehicleType,
-          estimatedCost,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to save booking');
-      }
-
-      showToast(`Thanks for booking! 💛`, 'success');
-      resetForm();
-    } else {
-      showToast('Error: Please select valid locations and vehicle type.', 'error');
+  const handleBooking = async () => {
+    if (!name || !phone || !pickupLocation || !dropoffLocation || !vehicleType) {
+      showToast('Please fill all fields', 'error');
+      return;
     }
-  } catch (error) {
-    showToast(`Error: ${error.message}`, 'error');
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+
+    try {
+      if (estimatedCost !== null) {
+        const response = await fetch('https://vipreshana-3.onrender.com/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            phone,
+            pickupLocation,
+            dropoffLocation,
+            vehicleType,
+            estimatedCost,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || 'Failed to save booking');
+        }
+
+        showToast('Thanks for booking! 💛', 'success');
+        resetForm();
+      } else {
+        showToast('Error: Please select valid locations and vehicle type.', 'error');
+      }
+    } catch (error) {
+      showToast(`Error: ${error.message}`, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isDark = theme === 'dark';
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center p-5"
+      className={`min-h-screen bg-cover bg-center flex items-center justify-center p-5 ${
+        isDark ? 'dark' : ''
+      }`}
       style={{
         backgroundImage: `url('https://images.pexels.com/photos/681335/pexels-photo-681335.jpeg?auto=compress&cs=tinysrgb&w=600')`,
+        filter: isDark ? 'brightness(0.7)' : 'brightness(1)',
       }}
     >
-      <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-10 w-full max-w-lg">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-700">Book Your Vehicle</h1>
-        <form onSubmit={handleBooking}>
+      <div className={`${
+        isDark 
+          ? 'bg-gray-800 bg-opacity-90 text-white' 
+          : 'bg-white bg-opacity-80 text-gray-900'
+      } rounded-lg shadow-lg p-10 w-full max-w-lg relative`}>
+        
+        <button
+          onClick={toggleTheme}
+          className={`absolute top-4 right-4 p-2 rounded-full ${
+            isDark 
+              ? 'bg-gray-700 hover:bg-gray-600 text-yellow-300' 
+              : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+          } transition-colors duration-200`}
+          aria-label="Toggle theme"
+        >
+          {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
+        <h1 className={`text-4xl font-bold text-center mb-8 ${
+          isDark ? 'text-blue-300' : 'text-blue-700'
+        }`}>
+          Book Your Vehicle
+        </h1>
+        
+        <div>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700">Name</label>
+            <label className={`block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Name
+            </label>
             <input
               type="text"
-              id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
+              className={`w-full px-4 py-2 border rounded-lg ${
+                isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             />
           </div>
+          
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-gray-700">Phone</label>
+            <label className={`block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Phone
+            </label>
             <input
               type="text"
-              id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
+              className={`w-full px-4 py-2 border rounded-lg ${
+                isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             />
           </div>
+          
           <div className="mb-4">
-            <label htmlFor="pickupLocation" className="block text-gray-700">Pickup Location</label>
+            <label className={`block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Pickup Location
+            </label>
             <select
-              id="pickupLocation"
               value={pickupLocation}
               onChange={(e) => setPickupLocation(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
+              className={`w-full px-4 py-2 border rounded-lg ${
+                isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             >
               <option value="">Select Pickup Location</option>
               {cities.map((city, index) => (
@@ -213,14 +261,19 @@ const handleBooking = async (e) => {
               ))}
             </select>
           </div>
+          
           <div className="mb-4">
-            <label htmlFor="dropoffLocation" className="block text-gray-700">Dropoff Location</label>
+            <label className={`block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Dropoff Location
+            </label>
             <select
-              id="dropoffLocation"
               value={dropoffLocation}
               onChange={(e) => setDropoffLocation(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
+              className={`w-full px-4 py-2 border rounded-lg ${
+                isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             >
               <option value="">Select Dropoff Location</option>
               {cities.map((city, index) => (
@@ -228,14 +281,19 @@ const handleBooking = async (e) => {
               ))}
             </select>
           </div>
+          
           <div className="mb-4">
-            <label htmlFor="vehicleType" className="block text-gray-700">Vehicle Type</label>
+            <label className={`block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Vehicle Type
+            </label>
             <select
-              id="vehicleType"
               value={vehicleType}
               onChange={(e) => setVehicleType(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
+              className={`w-full px-4 py-2 border rounded-lg ${
+                isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             >
               <option value="">Select Vehicle Type</option>
               <option value="Car">Car</option>
@@ -243,25 +301,35 @@ const handleBooking = async (e) => {
               <option value="Bus">Bus</option>
             </select>
           </div>
+          
           <div className="mb-4">
             {calculating ? (
-              <div className="text-center text-blue-500">Calculating Cost...</div>
+              <div className={`text-center ${isDark ? 'text-blue-300' : 'text-blue-500'}`}>
+                Calculating Cost...
+              </div>
             ) : (
-              <div className="text-center font-semibold text-xl text-green-600">
+              <div className={`text-center font-semibold text-xl ${
+                isDark ? 'text-green-300' : 'text-green-600'
+              }`}>
                 Estimated Cost: ₹{estimatedCost !== null ? estimatedCost : 0}
               </div>
             )}
           </div>
+          
           <div className="flex justify-center">
             <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={handleBooking}
+              className={`w-full py-2 px-4 rounded-lg font-medium transition-colors duration-200 ${
+                isDark
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
               disabled={loading || calculating}
             >
               {loading ? 'Booking...' : 'Book Now'}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
