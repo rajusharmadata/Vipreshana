@@ -25,7 +25,7 @@ const registrationSchema = new mongoose.Schema({
                 values: ['User', 'Admin', 'Driver'],
                 message: '{VALUE} is not a valid role',
             },
-            default: 'user',
+            default: 'User',
         }
 });
 
