@@ -1,0 +1,41 @@
+
+.loader-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.loader-truck {
+  width: 200px;
+  max-width: 80%;
+  animation: moveTruck 2s infinite ease-in-out;
+}
+
+.loader-text {
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes moveTruck {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(15px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  } 
+  to {
+    opacity: 1;
+  }
+}
