@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {  Car, Truck, Bus, MapPin, User, Phone, Calculator, Sparkles, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
+import { Sun, Moon, Car, Truck, Bus, MapPin, User, Phone, Calculator, Sparkles, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
 
 function debounce(func, delay) {
   let timeout;
@@ -181,10 +181,13 @@ const TransportBooking = () => {
     }
   };
 
+  const isDark = theme === 'dark';
 
   return (
     <div className={`min-h-screen transition-all duration-500 ${
-        'bg-gradient-to-br from-indigo-50 via-white to-cyan-50'
+      isDark 
+        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
+        : 'bg-gradient-to-br from-indigo-50 via-white to-cyan-50'
     } flex items-center justify-center p-4 sm:p-6 lg:p-8`}>
       
       {toast.show && (
@@ -204,33 +207,53 @@ const TransportBooking = () => {
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute -top-1/2 -right-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse ${
-           'bg-gradient-to-br from-blue-400/20 to-purple-600/20'
+          isDark 
+            ? 'bg-gradient-to-br from-blue-600/20 to-purple-800/20' 
+            : 'bg-gradient-to-br from-blue-400/20 to-purple-600/20'
         }`}></div>
         <div className={`absolute -bottom-1/2 -left-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse ${
-          'bg-gradient-to-tr from-cyan-400/20 to-blue-600/20'
+          isDark 
+            ? 'bg-gradient-to-tr from-cyan-600/20 to-blue-800/20' 
+            : 'bg-gradient-to-tr from-cyan-400/20 to-blue-600/20'
         }`} style={{animationDelay: '1s'}}></div>
       </div>
 
       <div className="relative w-full max-w-4xl mx-auto">
         <div className={`backdrop-blur-sm rounded-2xl shadow-xl border p-6 sm:p-8 lg:p-12 ${
-          'bg-white/80 border-white/20'
+          isDark
+            ? 'bg-gray-800/80 border-gray-700/50'
+            : 'bg-white/80 border-white/20'
         }`}>
           
           <div className="text-center mb-8 relative">
-            
+            <button
+              onClick={toggleTheme}
+              className={`absolute top-0 right-0 p-3 rounded-full transition-all duration-200 ${
+                isDark 
+                  ? 'bg-gray-700/50 hover:bg-gray-600/50 text-yellow-400' 
+                  : 'bg-gray-100/50 hover:bg-gray-200/50 text-gray-800'
+              }`}
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
 
             <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg ${
-              'bg-gradient-to-br from-blue-500 to-blue-600'
+              isDark
+                ? 'bg-gradient-to-br from-blue-600 to-purple-600'
+                : 'bg-gradient-to-br from-blue-500 to-blue-600'
             }`}>
               <Navigation className="w-8 h-8 text-white" />
             </div>
             
             <h1 className={`text-2xl sm:text-4xl font-bold mb-2 ${
-               'bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent'
+              isDark
+                ? 'bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent'
+                : 'bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent'
             }`}>
               Book Your Ride
             </h1>
-            <p className={`text-sm ${ 'text-gray-600'}`}>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Fast, reliable transportation at your fingertips
             </p>
           </div>
@@ -239,7 +262,7 @@ const TransportBooking = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className={`flex items-center gap-2 text-sm font-medium ${
-                  'text-gray-700'
+                  isDark ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   <User className="w-4 h-4" />
                   Full Name
@@ -249,7 +272,9 @@ const TransportBooking = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                   isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
                   }`}
                   placeholder="Enter your full name"
                 />
@@ -257,7 +282,7 @@ const TransportBooking = () => {
 
               <div className="space-y-2">
                 <label className={`flex items-center gap-2 text-sm font-medium ${
-                  'text-gray-700'
+                  isDark ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   <Phone className="w-4 h-4" />
                   Phone Number
@@ -267,7 +292,9 @@ const TransportBooking = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
                   }`}
                   placeholder="Enter your phone number"
                 />
@@ -277,7 +304,7 @@ const TransportBooking = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className={`flex items-center gap-2 text-sm font-medium ${
-                  'text-gray-700'
+                  isDark ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   <MapPin className="w-4 h-4 text-green-500" />
                   Pickup Location
@@ -286,7 +313,9 @@ const TransportBooking = () => {
                   value={pickupLocation}
                   onChange={(e) => setPickupLocation(e.target.value)}
                   className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                     'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
                   }`}
                 >
                   <option value="">Select pickup location</option>
@@ -298,7 +327,7 @@ const TransportBooking = () => {
 
               <div className="space-y-2">
                 <label className={`flex items-center gap-2 text-sm font-medium ${
-                  'text-gray-700'
+                  isDark ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   <MapPin className="w-4 h-4 text-red-500" />
                   Drop-off Location
@@ -307,7 +336,9 @@ const TransportBooking = () => {
                   value={dropoffLocation}
                   onChange={(e) => setDropoffLocation(e.target.value)}
                   className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                     'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
                   }`}
                 >
                   <option value="">Select drop-off location</option>
@@ -321,7 +352,7 @@ const TransportBooking = () => {
             {/* Vehicle Selection */}
             <div className="space-y-4">
               <label className={`flex items-center gap-2 text-sm font-medium ${
-                'text-gray-700'
+                isDark ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 <Car className="w-4 h-4" />
                 Vehicle Type
@@ -331,7 +362,9 @@ const TransportBooking = () => {
                   value={vehicleType}
                   onChange={(e) => setVehicleType(e.target.value)}
                   className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer ${
-                     'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
                   }`}
                 >
                   <option value="">Choose your vehicle</option>
@@ -341,7 +374,7 @@ const TransportBooking = () => {
                 </select>
                 {vehicleType && (
                   <div className={`absolute right-12 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-2 ${
-                     getVehicleBadgeColor(vehicleType)
+                    isDark ? 'bg-gray-600 border-gray-500 text-gray-200' : getVehicleBadgeColor(vehicleType)
                   }`}>
                     {getVehicleIcon(vehicleType)}
                     <span>{vehicleType}</span>
@@ -350,24 +383,26 @@ const TransportBooking = () => {
               </div>
             </div>
             <div className={`rounded-xl p-6 border ${
-               'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
+              isDark
+                ? 'bg-gradient-to-r from-blue-900/30 to-purple-900/30 border-blue-800/30'
+                : 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
             }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Calculator className={`w-5 h-5 ${ 'text-blue-600'}`} />
-                  <span className={`font-medium ${ 'text-gray-700'}`}>
+                  <Calculator className={`w-5 h-5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     Estimated Cost
                   </span>
                 </div>
                 <div className="text-right">
                   {calculating ? (
-                    <div className={`flex items-center gap-2 ${ 'text-blue-600'}`}>
+                    <div className={`flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                       <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                       <span className="text-sm">Calculating...</span>
                     </div>
                   ) : (
                     <div className={`text-2xl font-bold ${
-                      'text-green-600'
+                      isDark ? 'text-green-400' : 'text-green-600'
                     }`}>
                       ₹{estimatedCost !== null ? estimatedCost.toLocaleString() : '0'}
                     </div>
@@ -381,7 +416,9 @@ const TransportBooking = () => {
               onClick={handleBooking}
               disabled={loading || calculating}
               className={`w-full p-4 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] ${
-                 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+                isDark
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
               }`}
             >
               {loading ? (
@@ -401,7 +438,7 @@ const TransportBooking = () => {
 
 
         <div className="text-center mt-6">
-          <p className={`text-xs ${ 'text-gray-500'}`}>
+          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
             Safe, reliable transportation • Available 24/7 • Trusted by thousands
           </p>
         </div>
