@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from './context/ThemeContext';
 
 const About = () => {
-  const { theme } = useTheme();
+  const { theme,toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
   return (
@@ -14,6 +14,18 @@ const About = () => {
       }`}
     >
       {/* Title */}
+      <button
+                      onClick={toggleTheme}
+                      className={`p-3 rounded-full transition-all duration-300 ${
+                          isDark 
+                              ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
+                              : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
+                      }`}
+                      aria-label="Toggle theme"
+                      style={{fontSize: '1rem'}}
+                  >
+                      {isDark ? '☀️' : '🌙'}
+      </button>
       <h1 className="text-4xl md:text-5xl font-bold text-center mb-4 tracking-tight">
         Empowering Smarter Deliveries with Vipreshana 🚛✨
       </h1>
