@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Toastify from 'toastify-js';
-import "toastify-js/src/toastify.css";
+import { Sun, Moon, Car, Truck, Bus, MapPin, User, Phone, Calculator, Sparkles, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
 
 function debounce(func, delay) {
   let timeout;
@@ -23,7 +22,7 @@ const cityCoordinates = {
 };
 
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
   const a =
@@ -44,21 +43,8 @@ const getBaseCost = (vehicleType) => {
   return costMap[vehicleType] || 10;
 };
 
-const showToast = (message, type) => {
-  const bgColor = type === 'success' ? "#4caf50" : "#f44336";
-  Toastify({
-    text: message,
-    duration: 3000,
-    close: true,
-    gravity: "top",
-    position: 'right',
-    style: {
-      background: bgColor,
-    },
-  }).showToast();
-};
-
-const User = () => {
+const TransportBooking = () => {
+  const [theme, setTheme] = useState('light');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [pickupLocation, setPickupLocation] = useState('');
@@ -68,12 +54,17 @@ const User = () => {
   const [loading, setLoading] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [cities, setCities] = useState([]);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
     setCities(Object.keys(cityCoordinates));
   }, []);
 
-  // Debounced calculation function which accepts current inputs as arguments
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 4000);
+  };
+
   const calculateCost = useCallback((pickup, dropoff, vehicle) => {
     if (!pickup || !dropoff || !vehicle) {
       setEstimatedCost(null);
@@ -106,7 +97,6 @@ const User = () => {
     }
   }, []);
 
-  // Create debounced version of calculateCost, stable across renders
   const debouncedCalculateCost = useCallback(
     debounce((pickup, dropoff, vehicle) => {
       calculateCost(pickup, dropoff, vehicle);
@@ -114,7 +104,6 @@ const User = () => {
     [calculateCost]
   );
 
-  // Call debounced calculate on changes
   useEffect(() => {
     debouncedCalculateCost(pickupLocation, dropoffLocation, vehicleType);
   }, [pickupLocation, dropoffLocation, vehicleType, debouncedCalculateCost]);
@@ -127,144 +116,335 @@ const User = () => {
     setVehicleType('');
     setEstimatedCost(null);
   };
-const handleBooking = async (e) => {
-  e.preventDefault();
-  setLoading(true);
 
-  try {
-    if (estimatedCost !== null) {
-      const response = await fetch('https://vipreshana-3.onrender.com/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          phone,
-          pickupLocation,
-          dropoffLocation,
-          vehicleType,
-          estimatedCost,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to save booking');
-      }
-
-      showToast(`Thanks for booking! 💛`, 'success');
-      resetForm();
-    } else {
-      showToast('Error: Please select valid locations and vehicle type.', 'error');
+  const handleBooking = async () => {
+    if (!name || !phone || !pickupLocation || !dropoffLocation || !vehicleType) {
+      showToast('Please fill all fields', 'error');
+      return;
     }
-  } catch (error) {
-    showToast(`Error: ${error.message}`, 'error');
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+
+    try {
+      if (estimatedCost !== null) {
+        const response = await fetch('https://vipreshana-3.onrender.com/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            phone,
+            pickupLocation,
+            dropoffLocation,
+            vehicleType,
+            estimatedCost,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || 'Failed to save booking');
+        }
+
+        showToast('Thanks for booking! Your ride is confirmed 🚗', 'success');
+        resetForm();
+      } else {
+        showToast('Error: Please select valid locations and vehicle type.', 'error');
+      }
+    } catch (error) {
+      showToast(`Error: ${error.message}`, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
+  const getVehicleIcon = (type) => {
+    switch (type) {
+      case 'Car': return <Car className="w-5 h-5" />;
+      case 'Van': return <Truck className="w-5 h-5" />;
+      case 'Bus': return <Bus className="w-5 h-5" />;
+      default: return <Car className="w-5 h-5" />;
+    }
+  };
+
+  const getVehicleBadgeColor = (type) => {
+    switch (type) {
+      case 'Car': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Van': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Bus': return 'bg-purple-100 text-purple-800 border-purple-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const isDark = theme === 'dark';
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center p-5"
-      style={{
-        backgroundImage: `url('https://images.pexels.com/photos/681335/pexels-photo-681335.jpeg?auto=compress&cs=tinysrgb&w=600')`,
-      }}
-    >
-      <div className="bg-white bg-opacity-80 rounded-lg shadow-lg p-10 w-full max-w-lg">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-700">Book Your Vehicle</h1>
-        <form onSubmit={handleBooking}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700">Name</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="phone" className="block text-gray-700">Phone</label>
-            <input
-              type="text"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="pickupLocation" className="block text-gray-700">Pickup Location</label>
-            <select
-              id="pickupLocation"
-              value={pickupLocation}
-              onChange={(e) => setPickupLocation(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
-            >
-              <option value="">Select Pickup Location</option>
-              {cities.map((city, index) => (
-                <option key={index} value={city}>{city}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="dropoffLocation" className="block text-gray-700">Dropoff Location</label>
-            <select
-              id="dropoffLocation"
-              value={dropoffLocation}
-              onChange={(e) => setDropoffLocation(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
-            >
-              <option value="">Select Dropoff Location</option>
-              {cities.map((city, index) => (
-                <option key={index} value={city}>{city}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="vehicleType" className="block text-gray-700">Vehicle Type</label>
-            <select
-              id="vehicleType"
-              value={vehicleType}
-              onChange={(e) => setVehicleType(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              required
-            >
-              <option value="">Select Vehicle Type</option>
-              <option value="Car">Car</option>
-              <option value="Van">Van</option>
-              <option value="Bus">Bus</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            {calculating ? (
-              <div className="text-center text-blue-500">Calculating Cost...</div>
-            ) : (
-              <div className="text-center font-semibold text-xl text-green-600">
-                Estimated Cost: ₹{estimatedCost !== null ? estimatedCost : 0}
-              </div>
-            )}
-          </div>
-          <div className="flex justify-center">
+    <div className={`min-h-screen transition-all duration-500 ${
+      isDark 
+        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
+        : 'bg-gradient-to-br from-indigo-50 via-white to-cyan-50'
+    } flex items-center justify-center p-4 sm:p-6 lg:p-8`}>
+      
+      {toast.show && (
+        <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg transform transition-all duration-300 backdrop-blur-sm ${
+          toast.type === 'success' 
+            ? 'bg-green-50/90 text-green-800 border border-green-200' 
+            : 'bg-red-50/90 text-red-800 border border-red-200'
+        }`}>
+          {toast.type === 'success' ? (
+            <CheckCircle className="w-5 h-5" />
+          ) : (
+            <AlertCircle className="w-5 h-5" />
+          )}
+          <span className="text-sm font-medium">{toast.message}</span>
+        </div>
+      )}
+
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute -top-1/2 -right-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse ${
+          isDark 
+            ? 'bg-gradient-to-br from-blue-600/20 to-purple-800/20' 
+            : 'bg-gradient-to-br from-blue-400/20 to-purple-600/20'
+        }`}></div>
+        <div className={`absolute -bottom-1/2 -left-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse ${
+          isDark 
+            ? 'bg-gradient-to-tr from-cyan-600/20 to-blue-800/20' 
+            : 'bg-gradient-to-tr from-cyan-400/20 to-blue-600/20'
+        }`} style={{animationDelay: '1s'}}></div>
+      </div>
+
+      <div className="relative w-full max-w-4xl mx-auto">
+        <div className={`backdrop-blur-sm rounded-2xl shadow-xl border p-6 sm:p-8 lg:p-12 ${
+          isDark
+            ? 'bg-gray-800/80 border-gray-700/50'
+            : 'bg-white/80 border-white/20'
+        }`}>
+          
+          <div className="text-center mb-8 relative">
             <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg"
-              disabled={loading || calculating}
+              onClick={toggleTheme}
+              className={`absolute top-0 right-0 p-3 rounded-full transition-all duration-200 ${
+                isDark 
+                  ? 'bg-gray-700/50 hover:bg-gray-600/50 text-yellow-400' 
+                  : 'bg-gray-100/50 hover:bg-gray-200/50 text-gray-800'
+              }`}
+              aria-label="Toggle theme"
             >
-              {loading ? 'Booking...' : 'Book Now'}
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
+            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg ${
+              isDark
+                ? 'bg-gradient-to-br from-blue-600 to-purple-600'
+                : 'bg-gradient-to-br from-blue-500 to-blue-600'
+            }`}>
+              <Navigation className="w-8 h-8 text-white" />
+            </div>
+            
+            <h1 className={`text-2xl sm:text-4xl font-bold mb-2 ${
+              isDark
+                ? 'bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent'
+                : 'bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent'
+            }`}>
+              Book Your Ride
+            </h1>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Fast, reliable transportation at your fingertips
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={`flex items-center gap-2 text-sm font-medium ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  <User className="w-4 h-4" />
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                   isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                  }`}
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className={`flex items-center gap-2 text-sm font-medium ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  <Phone className="w-4 h-4" />
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                  }`}
+                  placeholder="Enter your phone number"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className={`flex items-center gap-2 text-sm font-medium ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  <MapPin className="w-4 h-4 text-green-500" />
+                  Pickup Location
+                </label>
+                <select
+                  value={pickupLocation}
+                  onChange={(e) => setPickupLocation(e.target.value)}
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                  }`}
+                >
+                  <option value="">Select pickup location</option>
+                  {cities.map((city, index) => (
+                    <option key={index} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className={`flex items-center gap-2 text-sm font-medium ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  <MapPin className="w-4 h-4 text-red-500" />
+                  Drop-off Location
+                </label>
+                <select
+                  value={dropoffLocation}
+                  onChange={(e) => setDropoffLocation(e.target.value)}
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                  }`}
+                >
+                  <option value="">Select drop-off location</option>
+                  {cities.map((city, index) => (
+                    <option key={index} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Vehicle Selection */}
+            <div className="space-y-4">
+              <label className={`flex items-center gap-2 text-sm font-medium ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                <Car className="w-4 h-4" />
+                Vehicle Type
+              </label>
+              <div className="relative">
+                <select
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value)}
+                  className={`w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer ${
+                    isDark 
+                      ? 'bg-gray-700/50 border-gray-600/50 hover:text-white placeholder-gray-400 hover:bg-gray-700 text-gray-600' 
+                      : 'bg-gray-50/50 border-gray-200 text-gray-900 hover:bg-white'
+                  }`}
+                >
+                  <option value="">Choose your vehicle</option>
+                  <option value="Car">🚗 Car - Comfortable & Quick</option>
+                  <option value="Van">🚐 Van - Spacious & Reliable</option>
+                  <option value="Bus">🚌 Bus - Group Travel</option>
+                </select>
+                {vehicleType && (
+                  <div className={`absolute right-12 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-2 ${
+                    isDark ? 'bg-gray-600 border-gray-500 text-gray-200' : getVehicleBadgeColor(vehicleType)
+                  }`}>
+                    {getVehicleIcon(vehicleType)}
+                    <span>{vehicleType}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className={`rounded-xl p-6 border ${
+              isDark
+                ? 'bg-gradient-to-r from-blue-900/30 to-purple-900/30 border-blue-800/30'
+                : 'bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calculator className={`w-5 h-5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Estimated Cost
+                  </span>
+                </div>
+                <div className="text-right">
+                  {calculating ? (
+                    <div className={`flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-sm">Calculating...</span>
+                    </div>
+                  ) : (
+                    <div className={`text-2xl font-bold ${
+                      isDark ? 'text-green-400' : 'text-green-600'
+                    }`}>
+                      ₹{estimatedCost !== null ? estimatedCost.toLocaleString() : '0'}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+ 
+            <button
+              onClick={handleBooking}
+              disabled={loading || calculating}
+              className={`w-full p-4 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] ${
+                isDark
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+              }`}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Booking Your Ride...
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Book Now
+                </div>
+              )}
             </button>
           </div>
-        </form>
+        </div>
+
+
+        <div className="text-center mt-6">
+          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+            Safe, reliable transportation • Available 24/7 • Trusted by thousands
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default User;
+export default TransportBooking;

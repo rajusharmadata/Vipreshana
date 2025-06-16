@@ -80,28 +80,48 @@ Organizations and users often face challenges in tracking service requests, deli
 
 ## 📦 Local Setup
 
+Want to run **Vipreshana** locally and contribute? Follow these simple steps! 🚀✨
+
+---
+
+### 🍴 1. Fork & Clone the Repository
+
+First, fork the repository to your GitHub account. Then, open your terminal and run:
+
 ```bash
-Want to run Vipreshana locally and contribute? Follow these simple steps! 🚀✨
-
-# 🍴 1. Fork & Clone the Repository
-
-First, fork the repository to your GitHub account. Then, open your vscode terminal and run:
-
 # Clone your forked repo
 git clone https://github.com/<your-username>/Vipreshana.git
 
 # Move into the project directory
 cd Vipreshana
 
-# Install Frontend  Dependencies
+# Install Frontend Dependencies
 npm install
 
-# Install Backend Dependencies
+# Move to server directory and install backend dependencies
 cd server
 npm install
 
-# Run frontend server
+# Add .env file
+cp .example.env .env
+
+# Then open .env and add the following credentials
+MONGO_CONNECTION_STRING=your_mongo_connection_string
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+PORT=5000
+
+# From the root directory [For frontend]
 npm start
+
+# From the root directory [For backend]
+cd server
+npm run dev
+
 
 # Visit the app at:
 http://localhost:3000/ 
+
+# Backend server runs on
+http://localhost:5000/
