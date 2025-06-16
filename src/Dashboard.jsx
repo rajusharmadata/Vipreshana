@@ -25,6 +25,15 @@ const Dashboard = () => {
                     About Us
                   </a>
 
+                  {/* How It Works Button */}
+                  <a
+                    href="/how-it-works"
+                    className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
+                    style={{textDecoration: 'none'}}
+                  >
+                    How It Works
+                  </a>
+
                   {/* Contact Button  */}
                   <a
                     href="/contact"
