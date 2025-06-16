@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useTheme } from './context/ThemeContext';
-import { Link } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons from react-icons
+import { Eye, EyeOff, User, Mail, Phone, Shield, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 const RegistrationForm = () => {
     const [formData, setFormData] = useState({
@@ -14,240 +15,287 @@ const RegistrationForm = () => {
     });
 
     const [error, setError] = useState('');
-    const [notification, setNotification] = useState(null);
-    const { theme, toggleTheme } = useTheme();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-    const showNotification = (message, type) => {
-        setNotification({ message, type });
-        setTimeout(() => setNotification(null), 3000);
-    };
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        if (error) setError(''); 
     };
 
-    const handleSubmit = async (e) => {
+    
+
+        const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        // Name should not be empty and must only contain letters and spaces
-        if (!formData.name.trim() || !/^[a-zA-Z\s]+$/.test(formData.name)) {
-            setError('Please enter a valid name (letters and spaces only)');
-            return;
-        }
-
-        // Email should be in valid format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            setError('Please enter a valid email address');
-            return;
-        }
-
-        // Password should be at least 6 characters
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters long');
-            return;
-        }
-
-        // Confirm password should match password
+        // Check if password matches confirm password
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
-        // Phone should be a 10-digit number
-        if (!/^\d{10}$/.test(formData.phone)) {
-            setError('Please enter a valid 10-digit phone number');
-            return;
-        }
-
-        // If role is admin, email must be from the specific domain
+        // Check if the user is registering as an admin
         if (formData.role === 'admin' && !formData.email.endsWith('@svecw.edu.in')) {
-            showNotification('Please enter a valid email for admin registration.', 'error');
+            toast.error('Please enter a valid email for admin registration.');
             return;
         }
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            showNotification('Registration successful! Please login.', 'success');
-            console.log('Registration successful for:', formData.name);
-
-            // Reset form
-            setFormData({
-                name: '',
-                email: '',
-                password: '',
-                confirmPassword: '',
-                phone: '',
-                role: 'user'
+            const response = await axios.post('https://vipreshana-3.onrender.com/register', {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                role: formData.role // Send role data to backend
             });
+            toast.success(response.data.message); // Show success toast
+            navigate('/login'); // Redirect to login page
         } catch (err) {
             setError('Registration failed: ' + (err.response?.data?.error || 'Unknown error'));
         }
     };
 
-    const isDark = theme === 'dark';
+
+    const getRoleIcon = (role) => {
+        switch (role) {
+            case 'user': return <User className="w-4 h-4" />;
+            case 'driver': return <span className="text-sm">🚗</span>;
+            case 'admin': return <Shield className="w-4 h-4" />;
+            default: return <User className="w-4 h-4" />;
+        }
+    };
+
+    const getRoleBadgeColor = (role) => {
+        switch (role) {
+            case 'user': return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'driver': return 'bg-green-100 text-green-800 border-green-200';
+            case 'admin': return 'bg-purple-100 text-purple-800 border-purple-200';
+            default: return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
 
     return (
-        <div
-            className={`flex items-center justify-center min-h-screen bg-cover bg-center transition-all duration-300 ${
-                isDark ? 'brightness-75' : 'brightness-100'
-            }`}
-            style={{ backgroundImage: "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?size=626&ext=jpg')" }}
-        >
-            {/* Notification */}
-            {notification && (
-                <div
-                    className={`absolute top-6 left-1/2 transform -translate-x-1/2 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ${
-                        notification.type === 'success'
-                            ? 'bg-green-500 text-white'
-                            : 'bg-red-500 text-white'
-                    }`}
-                >
-                    {notification.message}
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            {toast.show && (
+                <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 ${
+                    toast.type === 'success' 
+                        ? 'bg-green-50 text-green-800 border border-green-200' 
+                        : 'bg-red-50 text-red-800 border border-red-200'
+                }`}>
+                    {toast.type === 'success' ? (
+                        <CheckCircle className="w-5 h-5" />
+                    ) : (
+                        <AlertCircle className="w-5 h-5" />
+                    )}
+                    <span className="text-sm font-medium">{toast.message}</span>
                 </div>
             )}
 
-            {/* Theme Toggle Button */}
-            <button
-                onClick={toggleTheme}
-                className={`absolute top-6 right-6 p-3 rounded-full transition-all duration-300 ${
-                    isDark
-                        ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300'
-                        : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                }`}
-                aria-label="Toggle theme"
-            >
-                {isDark ? '☀️' : '🌙'}
-            </button>
+            
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-1/2 -right-1/2 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-1/2 -left-1/2 w-96 h-96 bg-gradient-to-tr from-cyan-400/20 to-blue-600/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            </div>
 
-            <div className={`rounded-lg shadow-lg p-10 max-w-md w-full transition-all duration-300 ${
-                isDark
-                    ? 'bg-gray-800 text-white border border-gray-700'
-                    : 'bg-white text-gray-900'
-            }`}>
-                <h1 className={`text-3xl font-bold text-center mb-5 transition-colors duration-300 ${
-                    isDark ? 'text-blue-400' : 'text-blue-600'
-                }`}>Create an Account</h1>
-
-                {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>👤 Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className={`block w-full p-3 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                            placeholder="Enter your name"
-                        />
+            
+            <div className="relative w-full max-w-6xl mx-auto">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8 lg:p-12">
+                    
+                    <div className="text-center mb-8">
+                        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                            <User className="w-8 h-8 text-white" />
+                        </div>
+                        <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                            Create Account
+                        </h1>
+                        <p className="text-gray-600 text-sm mt-2">Join us and get started today</p>
                     </div>
 
-                    <div>
-                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📧 Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className={`block w-full p-3 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                            placeholder="Enter your email"
-                        />
-                    </div>
+                    
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-red-700 text-sm">{error}</span>
+                        </div>
+                    )}
 
-                    <div className="relative">
-                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>🔒 Password</label>
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className={`block w-full p-3 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                            placeholder="Enter your password"
-                        />
+                    
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <User className="w-4 h-4" />
+                                    Full Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+                                    placeholder="Enter your full name"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <Mail className="w-4 h-4" />
+                                    Email Address
+                                </label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+                                    placeholder="Enter your email address"
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <span className="text-lg">🔒</span>
+                                    Password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full p-3 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+                                        placeholder="Create a strong password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <span className="text-lg">🔒</span>
+                                    Confirm Password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full p-3 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+                                        placeholder="Confirm your password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <Phone className="w-4 h-4" />
+                                    Phone Number
+                                </label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white"
+                                    placeholder="Enter your phone number"
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                    <Shield className="w-4 h-4" />
+                                    Account Type
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        name="role"
+                                        value={formData.role}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50/50 hover:bg-white appearance-none cursor-pointer"
+                                    >
+                                        <option value="user">👤 Regular User</option>
+                                        <option value="driver">🚗 Driver</option>
+                                        <option value="admin">🛠️ Administrator</option>
+                                    </select>
+                                    <div className={`absolute right-12 top-1/2 transform -translate-y-1/2 px-2 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getRoleBadgeColor(formData.role)}`}>
+                                        {getRoleIcon(formData.role)}
+                                        <span className="capitalize">{formData.role}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {formData.role === 'admin' && (
+                            <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                                ⚠️ Admin registration requires a valid @svecw.edu.in email address
+                            </div>
+                        )}
+
                         <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className={`absolute right-3 top-10 text-lg ${isDark ? 'text-gray-300 hover:text-gray-100' : 'text-gray-600 hover:text-gray-800'}`}
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            onClick={handleSubmit}
+                            disabled={isLoading}
+                            className="w-full p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
                         >
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            {isLoading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Creating Account...
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center gap-2">
+                                    <Sparkles className="w-5 h-5" />
+                                    Create Account
+                                </div>
+                            )}
                         </button>
+
+                        <div className="text-center pt-4 border-t border-gray-100">
+                            <p className="text-sm text-gray-600">
+                                Already have an account?{' '}
+                                <button 
+                                    onClick={() => alert('Navigate to login page')}
+                                    className="font-semibold text-blue-600 hover:text-blue-700 transition-colors hover:underline cursor-pointer"
+                                >
+                                    Sign in here
+                                </button>
+                            </p>
+                        </div>
                     </div>
+                </div>
 
-                    <div className="relative">
-                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>🔒 Confirm Password</label>
-                        <input
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            className={`block w-full p-3 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                            placeholder="Confirm your password"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className={`absolute right-3 top-10 text-lg ${isDark ? 'text-gray-300 hover:text-gray-100' : 'text-gray-600 hover:text-gray-800'}`}
-                            aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                        >
-                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
-                    </div>
-
-                    <div>
-                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📞 Phone</label>
-                        <input
-                            type="text"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            required
-                            className={`block w-full p-3 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                            placeholder="Enter your phone number"
-                        />
-                    </div>
-
-                    <div>
-                        <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>⭐ Role</label>
-                        <select
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            required
-                            className={`block w-full p-3 border rounded-md ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                        >
-                            <option value="user">👤 User</option>
-                            <option value="driver">🚗 Driver</option>
-                            <option value="admin">🛠️ Admin</option>
-                        </select>
-                    </div>
-
-                    <button
-                        type="submit"
-                        className={`w-full p-3 rounded-md ${isDark ? 'bg-blue-500 hover:bg-blue-400 text-white' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
-                    >
-                        Register
-                    </button>
-
-                    <p className={`text-center text-sm mt-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                        Already have an account?{' '}
-                        <Link to="/login" className={`font-semibold hover:underline bg-transparent border-none cursor-pointer ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                            Login
-                        </Link>
+                <div className="text-center mt-6">
+                    <p className="text-xs text-gray-500">
+                        By creating an account, you agree to our Terms of Service and Privacy Policy
                     </p>
-                </form>
+                </div>
             </div>
         </div>
     );
