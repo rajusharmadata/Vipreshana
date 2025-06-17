@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './context/ThemeContext';
 import { Package, Plus, User, Truck, MapPin, Clock } from 'lucide-react';
-import Navbar from './components/Navbar'; // Add Navbar import
+import Navbar from './components/Navbar';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginDashboard = () => {
     const navigate = useNavigate(); 
     
     const [fallbackTheme, setFallbackTheme] = useState('light');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [user, setUser] = useState(null);
+    const dropdownRef = useRef(null);
+    const buttonRef = useRef(null);
     
     let theme, toggleTheme;
     try {
@@ -21,6 +27,42 @@ const LoginDashboard = () => {
             setFallbackTheme(prev => prev === 'light' ? 'dark' : 'light');
         };
     }
+
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem("user");
+            if (!raw) return;
+
+            const parsed = JSON.parse(raw);
+            if (
+                parsed &&
+                typeof parsed === "object" &&
+                Object.keys(parsed).length > 0
+            ) {
+                setUser(parsed);
+            }
+        } catch (err) {
+            console.error("Failed to parse user from localStorage:", err);
+        }
+    }, []);
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target) &&
+                buttonRef.current &&
+                !buttonRef.current.contains(event.target)
+            ) {
+                setShowDropdown(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const handleBookingsClick = () => {
         try {
@@ -38,15 +80,89 @@ const LoginDashboard = () => {
         }
     };
 
+    const handleThemeToggle = () => {
+        toggleTheme();
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        toast.success("Logged out successfully!", { position: "top-right" });
+        setTimeout(() => navigate("/login"), 1500);
+    };
+
+    const getInitials = (name) => {
+        if (!name) return "?";
+        const words = name.trim().split(/\s+/);
+        const initials = words.map((word) => word[0].toUpperCase());
+        return initials.slice(0, 2).join("");
+    };
+
     const isDark = theme === 'dark';
 
     return (
         <>
             <Navbar />
-            <div className={`min-h-screen transition-all duration-300 ${
+            <div className={`min-h-screen transition-all duration-300 pt-24 ${
                 isDark ? 'bg-gray-900' : 'bg-gray-50'
             }`}>
-                {/* Remove separate theme toggle, Navbar handles theme switching */}
+                <ToastContainer />
+                {/* Theme toggle button (optional, since Navbar already has it) */}
+                {/* 
+                <button
+                    onClick={handleThemeToggle}
+                    className={`fixed top-6 right-6 p-3 rounded-full transition-all duration-300 z-20 shadow-lg ${
+                        isDark 
+                            ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
+                            : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
+                    } hover:shadow-xl hover:scale-110`}
+                    aria-label="Toggle theme"
+                >
+                    {isDark ? '☀️' : '🌙'}
+                </button>
+                */}
+                {/* User Profile Circle */}
+                {user && (
+                    <div className="absolute top-4 left-4 z-30">
+                        <button
+                            ref={buttonRef}
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            type="button"
+                            className={`w-14 h-14 rounded-full border-2 flex items-center justify-center text-2xl font-bold transition-all duration-300 shadow-lg transform hover:scale-110 active:scale-95 ${
+                                theme === "dark"
+                                ? "bg-yellow-400 text-gray-900 border-yellow-300 hover:bg-yellow-300"
+                                : "bg-gray-800 text-yellow-400 border-gray-600 hover:bg-gray-700"
+                            }`}
+                            title="User Profile"
+                        >
+                            {getInitials(user.name)}
+                        </button>
+                        {/* Dropdown */}
+                        {showDropdown && (
+                            <div ref={dropdownRef}
+                                className={`mt-2 w-64 p-4 rounded-lg shadow-xl absolute z-40 transition-all duration-300 border ${
+                                    theme === "dark"
+                                        ? "bg-gray-900 border-gray-700 text-white"
+                                        : "bg-white border-gray-300 text-gray-800"
+                                }`}
+                            >
+                                <h2 className="text-lg font-semibold mb-2">{user.name}</h2>
+                                <p className="text-sm mb-1">📧 Email: {user.email}</p>
+                                <p className="text-sm mb-1">📱 Phone: {user.phone}</p>
+                                <p className="text-sm mb-4">🧑‍💼 Role: {user.role}</p>
+                                <button
+                                    onClick={handleLogout}
+                                    className={`w-full px-4 py-2 rounded-md font-semibold transition duration-200 ${
+                                        theme === "dark"
+                                            ? "bg-red-600 text-white hover:bg-red-700"
+                                            : "bg-red-500 text-white hover:bg-red-600"
+                                    }`}
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <div 
                     className="relative h-80 bg-cover bg-center bg-no-repeat"

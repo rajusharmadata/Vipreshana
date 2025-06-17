@@ -27,8 +27,12 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/login`, formData);
-      const { redirectUrl, message } = response.data;
-      localStorage.setItem('userPhone', formData.phone);
+      const { user, redirectUrl, message } = response.data;
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      } else {
+        console.warn("Login response missing user object", response.data);
+      }
 
       toast.success(`🎉 ${message}`, {
         toastId: 'login-success',
