@@ -18,26 +18,47 @@ const UserBookings = () => {
   const isDarkMode = theme === "dark";
 
   useEffect(() => {
-    const fetchUserBookings = async () => {
+  const fetchUserBookings = async () => {
+    try {
       const phone = localStorage.getItem("userPhone");
-      if (!phone) {
-        setError("Phone number not found in local storage");
+
+      if (!phone || typeof phone !== "string" || phone.trim() === "") {
+        setError("Phone number not found or invalid in local storage");
         return;
       }
 
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
-        if (!response.ok) throw new Error("Failed to fetch bookings");
-        const data = await response.json();
-        setBookings(data);
-      } catch (err) {
-        console.error("Error fetching bookings:", err);
-        setError("Could not fetch bookings");
-      }
-    };
+      const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
 
-    fetchUserBookings();
-  }, []);
+      // Handle common HTTP error statuses gracefully
+      if (response.status === 404) {
+        setBookings([]); // No bookings yet
+        return;
+      }
+
+      if (!response.ok) {
+        setError("Failed to fetch bookings. Please try again later.");
+        return;
+      }
+
+      // Try parsing the response JSON
+      const data = await response.json();
+
+      // Ensure data is an array (optional sanity check)
+      if (!Array.isArray(data)) {
+        setError("Invalid booking data format received.");
+        return;
+      }
+
+      setBookings(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Something went wrong while fetching bookings.");
+    }
+  };
+
+  fetchUserBookings();
+}, []);
+
 
   const handleTrackDriver = (bookingId) => {
     localStorage.setItem("bookingId", bookingId);
