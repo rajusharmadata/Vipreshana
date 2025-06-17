@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useTheme } from '../context/ThemeContext';
+import Navbar from './Navbar'; // <-- IMPORT NAVBAR!
 import { User, Phone, MapPin, Navigation, Package, DollarSign, Truck, Clock, CheckCircle } from 'lucide-react';
 
 const Driver = () => {
@@ -10,7 +11,7 @@ const Driver = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [jobStatus, setJobStatus] = useState('');
     const [loading, setLoading] = useState(true);
-    const { theme, toggleTheme } = useTheme();
+    const { theme } = useTheme(); // No need for toggleTheme here
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -146,18 +147,7 @@ const Driver = () => {
         <div className={`min-h-screen transition-all duration-300 ${
             isDark ? 'bg-gray-900' : 'bg-gray-50'
         }`}>
-            {/* Theme Toggle */}
-            <button
-                onClick={toggleTheme}
-                className={`fixed top-6 right-6 p-3 rounded-full transition-all duration-300 z-20 shadow-lg ${
-                    isDark 
-                        ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
-                        : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                } hover:shadow-xl hover:scale-110`}
-                aria-label="Toggle theme"
-            >
-                {isDark ? '☀️' : '🌙'}
-            </button>
+            <Navbar /> {/* RENDER NAVBAR HERE */}
 
             {/* Hero Section with Background Image */}
             <div 
