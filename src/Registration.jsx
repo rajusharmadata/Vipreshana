@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+
 const RegistrationForm = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -45,7 +47,7 @@ const RegistrationForm = () => {
         }
 
         try {
-            const response = await axios.post('https://vipreshana-3.onrender.com/register', {
+            const response = await axios.post(`${API_BASE_URL}/register`, {
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,

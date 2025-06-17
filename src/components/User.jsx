@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sun, Moon, Car, Truck, Bus, MapPin, User, Phone, Calculator, Sparkles, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
 
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+
 function debounce(func, delay) {
   let timeout;
   return (...args) => {
@@ -127,7 +129,7 @@ const TransportBooking = () => {
 
     try {
       if (estimatedCost !== null) {
-        const response = await fetch('https://vipreshana-3.onrender.com/api/bookings', {
+        const response = await fetch(`${API_BASE_URL}/api/bookings`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
