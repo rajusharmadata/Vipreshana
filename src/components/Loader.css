@@ -1,51 +1,27 @@
 .loader-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   height: 100vh;
-  background-color: var(--bg-color, #ffffff);
-  transition: background-color 0.3s ease;
+  background-color: #ffffff;
 }
 
 .loader-truck {
   width: 180px;
-  max-width: 80%;
-  animation: moveTruck 1.6s infinite ease-in-out;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 .loader-text {
-  margin-top: 20px;
   font-size: 24px;
-  font-weight: 600;
-  color: var(--text-color, #333);
-  animation: fadeIn 1.2s ease-in-out;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  letter-spacing: 0.5px;
+  font-weight: bold;
+  color: #000000;
+  animation: pulse 1.5s infinite ease-in-out;
 }
 
-@keyframes moveTruck {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(20px);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  } 
-  to {
-    opacity: 1;
-  }
-}
-
-/* Optional: dark mode based on user's system */
-@media (prefers-color-scheme: dark) {
-  .loader-wrapper {
-    --bg-color: #121212;
-    --text-color: #f0f0f0;
-  }
+@keyframes pulse {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
 }

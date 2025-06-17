@@ -1,87 +1,80 @@
-import React from 'react';
-import { useTheme } from './context/ThemeContext'; // Adjust the import path as necessary
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from './context/ThemeContext'; 
 
 const Dashboard = () => {
-    const { theme, toggleTheme } = useTheme();
-    const isDark = theme === 'dark';
+    const navigate = useNavigate(); 
+    const { theme, toggleTheme } = useTheme(); 
+
+    const handleBookingsClick = () => {
+        navigate('/bookings');
+    };
+
+    const handleNewBookingsClick = () => {
+        navigate('/user');
+    };
+
+    const handleThemeToggle = () => {
+        toggleTheme();
+    };
 
     return (
-        <div
-            className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
-                isDark ? 'brightness-75' : 'brightness-100'
-            }`}
-            style={{ backgroundImage: "url('https://img.freepik.com/free-photo/scene-with-photorealistic-logistics-operations-proceedings_23-2151468862.jpg?size=626&ext=jpg&ga=GA1.1.1861036275.1716800359&semt=ais_hybrid-rr-similar')" }}
-        >
-            <div className={`absolute inset-0 ${isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-50'} flex flex-col justify-center items-center text-white transition-all duration-300`}>
-                
-                {/* Navigation Bar at the top right */}
-                <div className="absolute top-6 right-6 flex items-center space-x-4">
-                  {/* About Us Button  */}
-                  <a
-                    href="/about"
-                    className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
-                    style={{textDecoration: 'none'}}
-                  >
-                    About Us
-                  </a>
-
-                  {/* Contact Button  */}
-                  <a
-                    href="/contact"
-                    className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 hover:from-pink-500 hover:to-blue-500 "
-                    style={{textDecoration: 'none'}}
-                  >
-                    Contact
-                  </a>
-
-                  {/* Theme Toggle Button */}
-                  <button
-                      onClick={toggleTheme}
-                      className={`p-3 rounded-full transition-all duration-300 ${
-                          isDark 
-                              ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
-                              : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                      }`}
-                      aria-label="Toggle theme"
-                  >
-                      {isDark ? '☀️' : '🌙'}
-                  </button>
-                </div>
-
-                <h1 className={`text-4xl md:text-5xl font-bold mb-4 transition-colors duration-300 ${
-                    isDark ? 'text-blue-400' : 'text-white'
+        <div className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
+            theme === 'dark' ? 'bg-gray-900' : ''
+        }`} style={{ 
+            backgroundImage: theme === 'light' 
+                ? "url('https://media.istockphoto.com/id/174870355/photo/visual-representation-of-transportation-modes.jpg')" 
+                : "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2070&q=80')"
+        }}>
+            <button onClick={handleThemeToggle}
+                className={`absolute top-4 left-4 p-3 rounded-full z-30 border-2 ${
+                    theme === 'dark' 
+                        ? 'bg-yellow-400 text-gray-900 border-yellow-300' 
+                        : 'bg-gray-800 text-yellow-400 border-gray-600'
                 }`}>
-                    Welcome to Our Logistics Platform
-                </h1>
-                
-                <p className={`text-lg md:text-xl mb-6 text-center px-4 transition-colors duration-300 ${
-                    isDark ? 'text-gray-300' : 'text-white'
+                {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+
+            <div className={`absolute inset-0 ${
+                theme === 'dark' ? 'bg-black bg-opacity-70' : 'bg-black bg-opacity-40'
+            }`}></div>
+
+            <div className="absolute top-4 right-8 flex gap-4 z-20">
+                <button onClick={handleBookingsClick}
+                    className={`px-8 py-4 rounded-lg ${
+                        theme === 'dark' 
+                            ? 'bg-blue-800 text-white' 
+                            : 'bg-blue-500 text-white'
+                    }`}>
+                    📋 View All Bookings
+                </button>
+
+                <button onClick={handleNewBookingsClick}
+                    className={`px-8 py-4 rounded-lg ${
+                        theme === 'dark' 
+                            ? 'bg-green-800 text-white' 
+                            : 'bg-green-500 text-white'
+                    }`}>
+                    ➕ Create New Booking
+                </button>
+            </div>
+
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+                <div className={`text-center p-8 rounded-lg ${
+                    theme === 'dark' 
+                        ? 'bg-gray-800 bg-opacity-90' 
+                        : 'bg-white bg-opacity-90'
                 }`}>
-                    Your one-stop solution for on-demand transportation services. 
-                    Book, track, and manage your shipments seamlessly.
-                </p>
-                
-                 <div className="flex space-x-4">
-                    <button
-                        className={`px-6 py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 ${
-                            isDark
-                                ? 'bg-gray-800 text-white border border-gray-600 hover:bg-gray-700'
-                                : 'bg-white text-black hover:bg-gray-200'
-                        }`}
-                        onClick={() => (window.location.href = '/register')}
-                    >
-                        Register
-                    </button>
-                    <button
-                        className={`px-6 py-3 rounded-xl shadow-md transition-all duration-300 transform hover:scale-105 ${
-                            isDark
-                                ? 'bg-blue-500 text-white hover:bg-blue-400'
-                                : 'bg-blue-600 text-white hover:bg-blue-700'
-                        }`}
-                        onClick={() => (window.location.href = '/login')}
-                    >
-                        Login
-                    </button>
+                    <h1 className={`text-5xl font-bold ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-800'
+                    }`}>
+                        Welcome to Dashboard
+                    </h1>
+                    <p className={`text-xl ${
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    }`}>
+                        Manage your bookings and transportation needs
+                    </p>
                 </div>
             </div>
         </div>
