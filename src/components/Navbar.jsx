@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <nav className={`w-full flex items-center justify-between px-6 py-4 shadow-md fixed top-0 left-0 z-50 ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
       <div className="flex items-center gap-6">
-        <Link to="/" className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Logistics</Link>
+        <Link to="/" className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Vipreshana</Link>
       </div>
       <div className="hidden md:flex items-center gap-6">
         <Link to="/dashboard" className="hover:underline">Dashboard</Link>
