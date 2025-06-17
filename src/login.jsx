@@ -138,39 +138,45 @@ const Login = () => {
               />
             </div>
 
-            <div className="relative">
-              <label
-                htmlFor="password"
-                className={`block text-sm font-medium ${
-                  isDark ? 'text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                🔒 Password
-              </label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                required
-                onChange={handleChange}
-                className={`mt-1 block w-full border rounded-xl shadow-sm p-3 ${
-                  isDark
-                    ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400'
-                    : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
-                }`}
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-3 top-10 text-lg ${
-                  isDark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black'
-                }`}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
+            <div className="mb-4">
+  <label
+    htmlFor="password"
+    className={`block text-sm font-medium mb-1 ${
+      isDark ? 'text-gray-300' : 'text-gray-700'
+    }`}
+  >
+    🔒 Password
+  </label>
+
+  <div className="relative">
+    <input
+      type={showPassword ? 'text' : 'password'}
+      id="password"
+      name="password"
+      required
+      onChange={handleChange}
+      className={`block w-full border rounded-xl shadow-sm p-3  ${
+        isDark
+          ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400'
+          : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
+      }`}
+      placeholder="Enter your password"
+    />
+    
+    {/* Toggle Button - only one icon */}
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className={`absolute right-5 top-1/2 transform -translate-y-1/2 text-xl ${
+        isDark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black'
+      }`}
+  aria-label={showPassword ? 'Hide password' : 'Show password'}
+    >
+      {showPassword ? <FaEyeSlash /> : <FaEye />}
+    </button>
+  </div>
+</div>
+
 
             <button
               type="submit"
