@@ -82,7 +82,7 @@ const About = () => {
         <button
           className={`px-6 py-3 rounded-full font-semibold text-white shadow-lg transition-all duration-300 ${
             isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700'
-          }`}
+          }`}  onClick={() => window.location.href = '/how-it-works'}
         >
           Explore How It Works 
         </button>
