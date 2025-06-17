@@ -4,6 +4,8 @@ import { useTheme } from "./context/ThemeContext";
 import { motion } from "framer-motion";
 import Navbar from "./components/Navbar"; // Import Navbar
 
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+
 const UserBookings = () => {
   // Use theme from context, not local state (for global consistency)
   const { theme } = useTheme();
@@ -22,7 +24,7 @@ const UserBookings = () => {
       }
 
       try {
-        const response = await fetch(`https://vipreshana-3.onrender.com/api/bookings/${phone}`);
+        const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
         if (!response.ok) throw new Error("Failed to fetch bookings");
         const data = await response.json();
         setBookings(data);

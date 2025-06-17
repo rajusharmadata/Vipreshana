@@ -5,6 +5,8 @@ import { useTheme } from '../context/ThemeContext';
 import Navbar from './Navbar'; // <-- IMPORT NAVBAR!
 import { User, Phone, MapPin, Navigation, Package, DollarSign, Truck, Clock, CheckCircle } from 'lucide-react';
 
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+
 const Driver = () => {
     const [bookings, setBookings] = useState([]);
     const [acceptedBooking, setAcceptedBooking] = useState(null);
@@ -16,7 +18,7 @@ const Driver = () => {
     useEffect(() => {
         const fetchBookings = async () => {
             try {
-                const response = await axios.get('https://vipreshana-3.onrender.com/api/details');
+                const response = await axios.get(`${API_BASE_URL}/api/details`);
                 setBookings(response.data); 
             } catch (error) {
                 console.error('Error fetching bookings:', error);
@@ -35,7 +37,7 @@ const Driver = () => {
             return;
         }
         try {
-            await axios.put(`https://vipreshana-3.onrender.com/api/details/${booking._id}/accept`, {
+            await axios.put(`${API_BASE_URL}/api/details/${booking._id}/accept`, {
                 accepted_booking: 'accepted'
             });
             setAcceptedBooking(booking);
@@ -66,7 +68,7 @@ const Driver = () => {
     const handleUpdateStatus = async (status) => {
         setJobStatus(status);
         try {
-            await axios.put(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}/status`, { status });
+            await axios.put(`${API_BASE_URL}/api/details/${acceptedBooking._id}/status`, { status });
             setAcceptedBooking(prevBooking => ({ ...prevBooking, status }));
             setBookings(prevBookings =>
                 prevBookings.map(booking =>
@@ -86,16 +88,16 @@ const Driver = () => {
     
         try {
             // Mark as delivered
-            await axios.put(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}/status`, { status: 'Delivered' });
+            await axios.put(`${API_BASE_URL}/api/details/${acceptedBooking._id}/status`, { status: 'Delivered' });
             
             // Send delivery message
-            await axios.post('https://vipreshana-3.onrender.com/api/details/deliver', {
+            await axios.post(`${API_BASE_URL}/api/details/deliver`, {
                 phone: acceptedBooking.phone,
                 message: `Dear ${acceptedBooking.name}, Your goods have been delivered from ${acceptedBooking.pickupLocation} to ${acceptedBooking.dropoffLocation} safely.`
             });
     
             // Delete the booking from the database
-            await axios.delete(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}`);
+            await axios.delete(`${API_BASE_URL}/api/details/${acceptedBooking._id}`);
     
             // Update state to remove the delivered booking
             setBookings(prevBookings => prevBookings.filter(booking => booking._id !== acceptedBooking._id));

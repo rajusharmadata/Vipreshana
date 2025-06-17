@@ -7,6 +7,8 @@ import { useTheme } from './context/ThemeContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navbar from './components/Navbar'; // Import Navbar
 
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+
 const Login = () => {
   const [formData, setFormData] = useState({ phone: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('https://vipreshana-3.onrender.com/login', formData);
+      const response = await axios.post(`${API_BASE_URL}/login`, formData);
       const { redirectUrl, message } = response.data;
       localStorage.setItem('userPhone', formData.phone);
 
