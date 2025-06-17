@@ -3,7 +3,7 @@ import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 
 const About = () => {
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
   const containerVariants = {
@@ -38,13 +38,28 @@ const About = () => {
       animate="visible"
       exit="exit"
     >
-      {/* Title */}
+      {/* Dark Mode Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        className={`fixed top-4 right-4 z-50 p-3 rounded-full transition-all duration-300 ${
+          isDark
+            ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300'
+            : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
+        }`}
+        aria-label="Toggle theme"
+        style={{ fontSize: '1rem' }}
+      >
+        {isDark ? '☀️' : '🌙'}
+      </button>
+
+      {/* Animated Title */}
       <motion.h1
         className="text-4xl md:text-5xl font-bold text-center mb-4 tracking-tight"
         variants={itemVariants}
       >
         Empowering Smarter Deliveries with Vipreshana 🚛✨
       </motion.h1>
+
       <motion.p
         className="text-center max-w-xl text-lg mb-12"
         variants={itemVariants}
