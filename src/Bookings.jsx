@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "./context/ThemeContext";
 import { motion } from "framer-motion";
 
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+
 const UserBookings = () => {
   const [theme, setTheme] = useState("light");
   const [bookings, setBookings] = useState([]);
@@ -24,7 +26,7 @@ const UserBookings = () => {
       }
 
       try {
-        const response = await fetch(`https://vipreshana-3.onrender.com/api/bookings/${phone}`);
+        const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
         if (!response.ok) throw new Error("Failed to fetch bookings");
         const data = await response.json();
         setBookings(data);
