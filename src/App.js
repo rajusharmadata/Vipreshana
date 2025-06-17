@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence, motion } from 'framer-motion';
 
 import Loader from './components/Loader';
-// Import your pages. Adjust the import paths as needed.
+
 import Dashboard from './Dashboard';
 import Login from './login';
 import Registration from './Registration';
@@ -15,6 +15,7 @@ import Driver from './components/Driver';
 import Location from './Location';
 import Bookings from './Bookings';
 import AdminDashboard from './AdminDashboard';
+
 
 const PageWrap = ({ children }) => (
   <motion.div
@@ -63,6 +64,43 @@ function App() {
     <Router>
       <AnimatedRoutes />
     </Router>
+=======
+import Contact from './Contact';
+import About from './About';
+import HowItWorks from './Howitworks';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ThemeProvider } from './context/ThemeContext';
+
+function App() {
+  return (
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/user" element={<User />} />
+          <Route path="/driver" element={<Driver />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/location" element={<Location />} />
+          <Route path="/bookings" element={<Bookings />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/register" element={<Registration />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/logindashboard" element={<LoginDashboard />} />
+          <Route path="/contact" element={<Contact/>} />
+          <Route path="/about" element={<About/>} />
+          <Route path="/how-it-works" element={<HowItWorks/>} />
+        </Routes>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          pauseOnHover
+          draggable
+        />
+      </Router>
+    </ThemeProvider>
+
   );
 }
 
