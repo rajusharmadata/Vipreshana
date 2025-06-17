@@ -57,7 +57,7 @@ const Dashboard = () => {
             
                   <button
                       onClick={toggleTheme}
-                      className={`group p-4 rounded-full transition-all duration-500 hover:scale-125 hover:rotate-12 transform-gpu ${
+                      className={`group p-3 rounded-full transition-all duration-500 hover:scale-110 hover:rotate-12 transform-gpu ${
                           isDark 
                               ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 hover:from-yellow-300 hover:to-yellow-400 hover:shadow-xl hover:shadow-yellow-400/30' 
                               : 'bg-gradient-to-r from-gray-800 to-gray-900 text-yellow-400 hover:from-gray-700 hover:to-gray-800 hover:shadow-xl hover:shadow-gray-800/30'
