@@ -71,51 +71,8 @@ const Contact = () => {
             <h2 className={`text-3xl font-bold mb-6 ${
               isDark ? 'text-blue-400' : 'text-gray-900'
             }`}>Send us a message</h2>
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input 
-                  type="text" 
-                  placeholder="Your full name" 
-                  className={`w-full p-3 rounded-lg border ${
-                    isDark 
-                      ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
-                      : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
-                  }`} 
-                />
-                <input 
-                  type="email" 
-                  placeholder="your.email@example.com" 
-                  className={`w-full p-3 rounded-lg border ${
-                    isDark 
-                      ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
-                      : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
-                  }`} 
-                />
-              </div>
-              <input 
-                type="text" 
-                placeholder="What's this about?" 
-                className={`w-full p-3 rounded-lg border ${
-                  isDark 
-                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
-                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
-                }`} 
-              />
-              <textarea 
-                placeholder="Tell us more about your inquiry..." 
-                rows="5" 
-                className={`w-full p-3 rounded-lg border ${
-                  isDark 
-                    ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
-                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
-                }`}
-              ></textarea>
-              <input 
-                type="file" 
-                className={`block w-full text-sm ${
-                  isDark ? 'text-gray-300' : 'text-gray-500'
-                } file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700`} 
-              />
+            <form className="space-y-4" onSubmit={e => e.preventDefault()}>
+              ...
               <button 
                 type="submit" 
                 className="w-full py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-all duration-300"
