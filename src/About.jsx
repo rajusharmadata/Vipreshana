@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar'; // <-- Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const About = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -29,6 +29,7 @@ const About = () => {
 
   return (
     <>
+    <PageMeta /> 
       <Navbar /> {/* Render the Navbar at the top */}
       <motion.div
         className={`min-h-screen flex flex-col items-center justify-center px-6 py-16 transition-colors duration-300 ${

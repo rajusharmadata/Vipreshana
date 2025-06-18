@@ -5,7 +5,7 @@ import { Package, Plus, User, Truck, MapPin, Clock } from 'lucide-react';
 import Navbar from './components/Navbar';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import PageMeta from './components/Pagemeta';
 const LoginDashboard = () => {
     const navigate = useNavigate(); 
     
@@ -101,6 +101,7 @@ const LoginDashboard = () => {
 
     return (
         <>
+        <PageMeta /> 
             <Navbar />
             <div className={`min-h-screen transition-all duration-300 pt-24 ${
                 isDark ? 'bg-gray-900' : 'bg-gray-50'
