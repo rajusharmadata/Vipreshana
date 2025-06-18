@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './FAQs.css';
-
+//faq data
 const faqData = [
     {
         question: 'What is Vipreshana?',
@@ -8,7 +8,7 @@ const faqData = [
     },
     {
         question: 'How do I book a shipment?',
-        answer: 'Register or log in, enter your pickup and drop-off locations, choose your vehicle type, and confirm your shipment request. It’s quick and hassle-free.',
+        answer: 'Register or log in, enter your pickup and drop-off locations, choose your vehicle type, and confirm your shipment request. It is quick, easy and hassle-free.',
     },
     {
         question: 'Can I track my shipment in real time?',
@@ -48,7 +48,7 @@ const FAQSection = ({ isDark }) => {
                         onClick={() => toggleFAQ(index)}
                     >
                         {item.question}
-                        <span>{activeIndex === index ? '−' : '+'}</span>
+                        <span>{activeIndex === index ? '-' : '+'}</span>
                     </div>
                     <div className="faq-answer">
                         <p>{item.answer}</p>
