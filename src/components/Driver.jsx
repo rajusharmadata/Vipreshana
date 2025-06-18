@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useTheme } from '../context/ThemeContext';
+import Navbar from './Navbar'; // <-- IMPORT NAVBAR!
 import { User, Phone, MapPin, Navigation, Package, DollarSign, Truck, Clock, CheckCircle } from 'lucide-react';
+
+const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const Driver = () => {
     const [bookings, setBookings] = useState([]);
@@ -10,12 +13,12 @@ const Driver = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [jobStatus, setJobStatus] = useState('');
     const [loading, setLoading] = useState(true);
-    const { theme, toggleTheme } = useTheme();
+    const { theme } = useTheme(); // No need for toggleTheme here
 
     useEffect(() => {
         const fetchBookings = async () => {
             try {
-                const response = await axios.get('https://vipreshana-3.onrender.com/api/details');
+                const response = await axios.get(`${API_BASE_URL}/api/details`);
                 setBookings(response.data); 
             } catch (error) {
                 console.error('Error fetching bookings:', error);
@@ -34,7 +37,7 @@ const Driver = () => {
             return;
         }
         try {
-            await axios.put(`https://vipreshana-3.onrender.com/api/details/${booking._id}/accept`, {
+            await axios.put(`${API_BASE_URL}/api/details/${booking._id}/accept`, {
                 accepted_booking: 'accepted'
             });
             setAcceptedBooking(booking);
@@ -65,7 +68,7 @@ const Driver = () => {
     const handleUpdateStatus = async (status) => {
         setJobStatus(status);
         try {
-            await axios.put(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}/status`, { status });
+            await axios.put(`${API_BASE_URL}/api/details/${acceptedBooking._id}/status`, { status });
             setAcceptedBooking(prevBooking => ({ ...prevBooking, status }));
             setBookings(prevBookings =>
                 prevBookings.map(booking =>
@@ -85,16 +88,16 @@ const Driver = () => {
     
         try {
             // Mark as delivered
-            await axios.put(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}/status`, { status: 'Delivered' });
+            await axios.put(`${API_BASE_URL}/api/details/${acceptedBooking._id}/status`, { status: 'Delivered' });
             
             // Send delivery message
-            await axios.post('https://vipreshana-3.onrender.com/api/details/deliver', {
+            await axios.post(`${API_BASE_URL}/api/details/deliver`, {
                 phone: acceptedBooking.phone,
                 message: `Dear ${acceptedBooking.name}, Your goods have been delivered from ${acceptedBooking.pickupLocation} to ${acceptedBooking.dropoffLocation} safely.`
             });
     
             // Delete the booking from the database
-            await axios.delete(`https://vipreshana-3.onrender.com/api/details/${acceptedBooking._id}`);
+            await axios.delete(`${API_BASE_URL}/api/details/${acceptedBooking._id}`);
     
             // Update state to remove the delivered booking
             setBookings(prevBookings => prevBookings.filter(booking => booking._id !== acceptedBooking._id));
@@ -146,18 +149,7 @@ const Driver = () => {
         <div className={`min-h-screen transition-all duration-300 ${
             isDark ? 'bg-gray-900' : 'bg-gray-50'
         }`}>
-            {/* Theme Toggle */}
-            <button
-                onClick={toggleTheme}
-                className={`fixed top-6 right-6 p-3 rounded-full transition-all duration-300 z-20 shadow-lg ${
-                    isDark 
-                        ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300' 
-                        : 'bg-gray-800 text-yellow-400 hover:bg-gray-700'
-                } hover:shadow-xl hover:scale-110`}
-                aria-label="Toggle theme"
-            >
-                {isDark ? '☀️' : '🌙'}
-            </button>
+            <Navbar /> {/* RENDER NAVBAR HERE */}
 
             {/* Hero Section with Background Image */}
             <div 
