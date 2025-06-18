@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 
 import { ThemeProvider } from './context/ThemeContext';
 import Loader from './components/Loader';
-
+import Footer from './components/Footer';
 import Dashboard from './Dashboard';
 import About from './About';
 import HowItWorks from './Howitworks';
@@ -41,6 +41,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/user" element={<User />} />
         <Route path="/driver" element={<Driver />} />
+        
       </Routes>
     </AnimatePresence>
   );
@@ -61,6 +62,7 @@ function App() {
       <Router>
         {loading ? <Loader /> : <AppRoutes />}
       </Router>
+      <Footer />
     </ThemeProvider>
   );
 }
