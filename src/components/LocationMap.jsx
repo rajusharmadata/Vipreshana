@@ -12,8 +12,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const Map = () => {
-  const position = [28.6139, 77.2090]; // Example: New Delhi
+const MapComponent = () => {
+  const position = [16.5408, 81.5232]; // Bhimavaram, West Godavari District, Andhra Pradesh
 
   return (
     <div className="rounded-lg overflow-hidden shadow-lg" style={{ height: '300px' }}>
@@ -24,7 +24,7 @@ const Map = () => {
         />
         <Marker position={position}>
           <Popup>
-            Our Office Location
+            Vipreshana Office - Bhimavaram, West Godavari District, Andhra Pradesh
           </Popup>
         </Marker>
       </MapContainer>
@@ -32,4 +32,4 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default MapComponent;
