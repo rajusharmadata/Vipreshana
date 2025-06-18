@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar'; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const lightLocationIcon = new L.Icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
     iconSize: [30, 30],
@@ -103,6 +103,7 @@ const UserLocation = () => {
 
     return (
         <>
+        <PageMeta /> 
             <Navbar />
             <div
                 className="min-h-screen transition-all duration-300"

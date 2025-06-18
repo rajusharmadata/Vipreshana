@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar'; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const contacts = [
   {
     name: 'GitHub',
@@ -37,6 +37,7 @@ const Contact = () => {
 
   return (
     <>
+    <PageMeta /> 
       <Navbar />
       <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-all duration-700 font-inter relative overflow-hidden ${
         isDark

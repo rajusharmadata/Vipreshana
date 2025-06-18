@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "./context/ThemeContext";
 import { motion } from "framer-motion";
 import Navbar from "./components/Navbar"; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const UserBookings = () => {
@@ -65,6 +65,7 @@ const UserBookings = () => {
 
   return (
     <>
+    <PageMeta /> 
       <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 50 }}
