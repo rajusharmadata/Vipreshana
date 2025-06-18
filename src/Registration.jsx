@@ -276,6 +276,7 @@ const RegistrationForm = () => {
                                 </p>
                             </div>
                         </form>
+
                     </div>
 
                     <div className="text-center mt-6">
