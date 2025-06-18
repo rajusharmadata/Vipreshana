@@ -282,12 +282,12 @@ const RegistrationForm = () => {
                         <div className="text-center pt-4 border-t border-gray-100">
                             <p className="text-sm text-gray-600">
                                 Already have an account?{' '}
-                                <button 
-                                    onClick={() => alert('Navigate to login page')}
+                                <Link 
+                                    to="/login"
                                     className="font-semibold text-blue-600 hover:text-blue-700 transition-colors hover:underline cursor-pointer"
                                 >
                                     Sign in here
-                                </button>
+                                </Link>
                             </p>
                         </div>
                     </div>
