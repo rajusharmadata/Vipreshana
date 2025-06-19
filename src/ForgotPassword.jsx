@@ -88,13 +88,13 @@ const ForgotPassword = () => {
                     {theme === 'light' ? '🌙' : '☀️'}
                 </button>
 
-                <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+               <div className={`absolute inset-0 flex justify-center pt-24 transition-all duration-300 ${
                     theme === 'dark' ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'
                 }`}>
-                    <div className={`p-10 rounded-lg shadow-xl w-96 transition-all duration-300 ${
+                   <div className={`max-h-[90vh] overflow-y-auto p-8 rounded-lg shadow-xl w-full max-w-md transition-all duration-300 ${
                         theme === 'dark' 
-                            ? 'bg-gray-800 border border-gray-700' 
-                            : 'bg-white'
+                            ? 'bg-gray-800 bg-opacity-95 border border-gray-700' 
+                            : 'bg-white bg-opacity-95'
                     }`}>
                         <div className="text-center mb-6">
                             <div className={`text-6xl mb-4 ${theme === 'dark' ? 'opacity-80' : 'opacity-90'}`}>
