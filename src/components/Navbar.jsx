@@ -73,10 +73,10 @@ const Navbar = () => {
         {/* Brand */}
         <Link
           to="/"
-          className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent hover:no-underline focus:no-underline visited:text-transparent focus:text-transparent"
+          className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent hover:no-underline focus:no-underline visited:text-transparent focus:text-transparent"
           onClick={closeMenu}
         >
-          Vipreshana
+        <img src="/logo.png" alt=" Vipreshana Logo" className="h-12 w-8 inline-block mr-1" />Vipreshana
         </Link>
 
         {/* Desktop Navigation Links */}
