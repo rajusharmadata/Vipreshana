@@ -16,7 +16,7 @@ const forgotPasswordController = async (req, res) => {
         to: email,
         subject: 'Reset Your Password',
         html: `<p>Click the link below to reset your password:</p>
-               <a href="http://localhost:3000/reset-password">Reset Password</a>`
+               <a href="https://vipreshana-2.vercel.app/reset-password">Reset Password</a>`
     };
 
     sendMail(mailData, (error, info) => {
