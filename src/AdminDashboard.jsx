@@ -2,13 +2,14 @@ import React from 'react';
 import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar'; // Import the Navbar
-
+import PageMeta from './components/Pagemeta';
 const AdminDashboard = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
   return (
     <>
+    <PageMeta /> 
       <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 30 }}

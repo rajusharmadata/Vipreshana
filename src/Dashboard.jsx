@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from './context/ThemeContext'; 
 import Navbar from './components/Navbar'; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
+import FAQSection from './components/FAQs'; //importing faq section
 const Dashboard = () => {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
@@ -13,6 +14,7 @@ const Dashboard = () => {
 
     return (
         <>
+        <PageMeta /> 
             <Navbar />
             <div
                 className={`relative h-screen bg-cover bg-center transition-all duration-700 ease-out font-inter ${
@@ -81,7 +83,9 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
+                
             </div>
+            <FAQSection isDark={isDark} />
         </>
     );
 };

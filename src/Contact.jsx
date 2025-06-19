@@ -4,7 +4,9 @@ import { Mail, MapPin, Phone, Clock, Github, Linkedin, Twitter, Instagram, Faceb
 
 import Navbar from './components/Navbar';
 import { useTheme } from './context/ThemeContext';
+
 import LocationMap from './components/LocationMap';
+
 
 const Contact = () => {
   const { theme } = useTheme();
@@ -47,6 +49,7 @@ const Contact = () => {
 
   return (
     <>
+
       <Navbar />
       <div className={`min-h-screen pt-24 px-4 py-12 font-inter transition-all duration-700 ${
         isDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 text-gray-900'
@@ -63,6 +66,7 @@ const Contact = () => {
             Have questions about our services? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
           </p>
         </div>
+
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
          
           <div className={`shadow-xl rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 ${
@@ -84,6 +88,7 @@ const Contact = () => {
                 Send Message
               </button>
             </form>
+
           </div>
 
           <div
@@ -105,6 +110,7 @@ const Contact = () => {
       <MapPin className="text-pink-800" size={30} />
       <span>Bhimavaram, West Godavari District, Andhra Pradesh</span>
     </div>
+
 
     {/* Email */}
     <div className="flex items-center gap-3 hover:translate-x-1 transition-all duration-200">
@@ -188,6 +194,7 @@ const Contact = () => {
             }`}>
               <LocationMap />
             </div>
+
           </div>
         </div>
       </div>
