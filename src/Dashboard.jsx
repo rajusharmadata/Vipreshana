@@ -60,20 +60,6 @@ const Dashboard = () => {
               <Typewriter text="Seamlessly manage, track, and optimize your freight with our intelligent logistics platform built for speed, scale, and reliability." />
             </p>
 
-            {/* <p
-              className={`text-xl md:text-2xl max-w-3xl mx-auto px-4 leading-relaxed transition-all duration-1000 transform font-light ${
-                isLoaded
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-10 opacity-0"
-              } ${isDark ? "text-gray-300" : "text-white drop-shadow-md"}`}
-              style={{ transitionDelay: "400ms", lineHeight: "1.6" }}
-            >
-              Your one-stop solution for on-demand transportation services.
-              <br />
-              <span className="font-medium">Book, track, and manage</span> your
-              shipments seamlessly with our advanced platform.
-            </p> */}
-
             <div
               className={`flex flex-col sm:flex-row gap-6 justify-center items-center transition-all duration-1000 transform ${
                 isLoaded
