@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import Navbar from './components/Navbar'; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const Login = () => {
@@ -76,6 +76,7 @@ const Login = () => {
 
   return (
     <>
+    <PageMeta /> 
       <Navbar />
       <div
         className={`relative h-screen bg-cover bg-center transition-all duration-300 ${

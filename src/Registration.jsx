@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import Navbar from './components/Navbar'; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const RegistrationForm = () => {
@@ -83,6 +83,7 @@ const RegistrationForm = () => {
 
     return (
         <>
+        <PageMeta /> 
             <Navbar />
             <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
                 {/* ToastContainer for notifications */}
@@ -276,6 +277,7 @@ const RegistrationForm = () => {
                                 </p>
                             </div>
                         </form>
+
                     </div>
 
                     <div className="text-center mt-6">

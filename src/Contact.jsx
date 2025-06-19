@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar'; // Import Navbar
-
+import PageMeta from './components/Pagemeta';
 const contacts = [
   {
     name: 'GitHub',
@@ -37,6 +37,7 @@ const Contact = () => {
 
   return (
     <>
+    <PageMeta /> 
       <Navbar />
       <div className={`min-h-screen flex flex-col items-center justify-center p-4 transition-all duration-700 font-inter relative overflow-hidden ${
         isDark
@@ -66,8 +67,8 @@ const Contact = () => {
           }`} style={{ transitionDelay: '200ms' }}>
             <h1 className={`text-5xl font-bold mb-2 bg-clip-text leading-tight ${
               isDark
-                ? 'text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400'
-                : 'text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600'
+                ? 'text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500'
+                : 'text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500'
             }`}>
               Contact Us
             </h1>
@@ -87,7 +88,7 @@ const Contact = () => {
             We'd love to hear from you! Reach out to us via any of the platforms below:
           </p>
 
-          <div className="flex justify-center gap-8 mb-8">
+          <div className="flex justify-center gap-7 mb-7">
             {contacts.map((contact, index) => (
               <div
                 key={contact.name}
@@ -140,7 +141,7 @@ const Contact = () => {
               isDark ? 'bg-purple-400' : 'bg-pink-500'
             }`} style={{ animationDelay: '0.5s' }}></div>
             <div className={`w-2 h-2 rounded-full animate-pulse ${
-              isDark ? 'bg-pink-400' : 'bg-blue-500'
+              isDark ? 'bg-pink-400' : 'bg-blue-400'
             }`} style={{ animationDelay: '1s' }}></div>
           </div>
         </div>

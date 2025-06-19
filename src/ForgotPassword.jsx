@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar'; // <-- Add this import
-
+import PageMeta from './components/Pagemeta';
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const { theme, toggleTheme } = useTheme(); 
@@ -66,6 +66,7 @@ const ForgotPassword = () => {
 
     return (
         <>
+        <PageMeta /> 
             <Navbar />
             <div className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
                 theme === 'dark' ? 'bg-gray-900' : ''
