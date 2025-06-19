@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated, signOut } = useAuth();
+
+  useEffect(() => {
+    // Check if user is logged in via localStorage
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }, []);
 
   const closeMenu = () => {
     setMenuOpen(false);
@@ -14,6 +30,38 @@ const Navbar = () => {
   const toggleMenu = () => {
     setMenuOpen(prevMenuOpen => !prevMenuOpen);
   };
+
+  const handleLogout = async () => {
+    try {
+      // If using Supabase auth
+      if (signOut) {
+        await signOut();
+      }
+      
+      // Clear local storage
+      localStorage.removeItem('user');
+      localStorage.removeItem('currentUser');
+      
+      // Update state
+      setUser(null);
+      
+      // Close mobile menu if open
+      closeMenu();
+      
+      // Redirect to home page
+      navigate('/', { replace: true });
+      
+      // Optional: Show toast notification
+      if (window.toast) {
+        window.toast.success('Logged out successfully');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+  // Check if user is logged in
+  const isLoggedIn = isAuthenticated || !!user;
 
   return (
     <>
@@ -41,6 +89,19 @@ const Navbar = () => {
           <Link to="/about" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>About</Link>
           <Link to="/how-it-works" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>How It Works</Link>
           <Link to="/contact" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>Contact</Link>
+          
+          {/* Only show Dashboard and Logout when logged in */}
+          {isLoggedIn && (
+            <>
+              <Link to="/dashboard" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>Dashboard</Link>
+              <button 
+                onClick={handleLogout}
+                className={`hover:text-red-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
 
         {/* Theme Toggle Button & Hamburger Icon  */}
@@ -80,9 +141,9 @@ const Navbar = () => {
 
       {/* Mobile Slide-in Menu (hidden on desktop) */}
       <div
-  className={`fixed top-0 right-0 h-full w-60 transform transition-transform  duration-300 z-50
-    ${menuOpen ? 'translate-x-0' : 'translate-x-full'}
-    md:hidden flex flex-col border-r border-white/10 dark:border-white/20`}
+        className={`fixed top-0 right-0 h-full w-60 transform transition-transform  duration-300 z-50
+          ${menuOpen ? 'translate-x-0' : 'translate-x-full'}
+          md:hidden flex flex-col border-r border-white/10 dark:border-white/20`}
         style={{
           WebkitBackdropFilter: 'blur(24px)',
           backdropFilter: 'blur(24px)',
@@ -103,6 +164,19 @@ const Navbar = () => {
           <Link to="/about" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>About</Link>
           <Link to="/how-it-works" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>How It Works</Link>
           <Link to="/contact" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>Contact</Link>
+          
+          {/* Only show Dashboard and Logout when logged in for mobile */}
+          {isLoggedIn && (
+            <>
+              <Link to="/dashboard" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>Dashboard</Link>
+              <button 
+                onClick={handleLogout}
+                className={`text-left py-1 ${isDark ? 'text-white' : 'text-gray-900'} hover:text-red-400 transition`}
+              >
+                Logout
+              </button>
+            </>
+          )}
         </nav>
       </div>
 
