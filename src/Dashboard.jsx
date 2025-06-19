@@ -4,8 +4,7 @@ import { useAuth } from './context/AuthContext';
 import { Link } from 'react-router-dom';
 import Navbar from './components/Navbar'; // Import Navbar
 import FAQSection from './components/FAQs'; //importing faq section
-import { useAuth } from './context/AuthContext';
-import {typewriter} from 'react-typewriter-text';
+// import {typewriter} from 'react-typewriter-text'; // Commented out as package may not exist
 
 const Dashboard = () => {
     const { theme } = useTheme();

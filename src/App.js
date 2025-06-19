@@ -115,14 +115,13 @@ function AppRoutes() {
         {/* Catch-all for auth callbacks with hash fragments */}
         <Route path="/auth/*" element={<AuthCallback />} />
         </Route>
-        <ToastContainer
+      </Routes>
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         pauseOnHover
         draggable
       />
-        
-      </Routes>
     </AnimatePresence>
   );
 }
@@ -146,8 +145,8 @@ function App() {
           <AuthSecurityHandler>
             {loading ? <Loader /> : <AppRoutes />}
           </AuthSecurityHandler>
+          <Footer />
         </Router>
-        <Footer />
       </ThemeProvider>
     </AuthProvider>
   );

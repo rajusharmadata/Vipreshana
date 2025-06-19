@@ -40,287 +40,61 @@ const getApiUrl = (endpoint) => {
   return `${API_BASE_URL}/${endpoint}`.replace(/\/+/g, '/')
 }
 
-// Phone authentication using Twilio backend
-export const sendOTP = async (phone, method = 'both') => {
-  try {
-    console.log('Sending OTP to:', phone, 'via', method)
-    console.log('API URL:', getApiUrl('otp/send-otp'))
-    
-    // Always return success in production to avoid issues with backend connectivity
-    // This is a temporary solution until the backend OTP service is fully operational
-    if (isProduction) {
-      console.log('Production mode: Using test mode for phone verification')
-      return { 
-        success: true, 
-        data: { sid: 'TEST_SID_' + Date.now(), environment: 'production' }, 
-        message: 'OTP sent successfully (Test Mode)' 
-      }
-    }
-    
-    // Use test phone number for development
-    const phoneNumber = process.env.REACT_APP_ENV === 'development' ? '+1234567890' : phone;
-    
-    console.log('Using phone number:', phoneNumber, '(development mode:', process.env.REACT_APP_ENV === 'development', ')')
-    
-    // Attempt to call the backend API
-    try {
-      const response = await fetch(getApiUrl('otp/send-otp'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: phoneNumber,
-          method: method
-        }),
-      })
-      
-      console.log('Response status:', response.status)
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Server error:', errorText)
-        throw new Error(`Server error: ${response.status} - ${errorText}`)
-      }
-      
-      const data = await response.json()
-      console.log('OTP Send Response:', data)
-      
-      if (data.success) {
-        return { success: true, data, message: data.message }
-      } else {
-        throw new Error(data.message || 'Failed to send OTP')
-      }
-    } catch (fetchError) {
-      console.error('Fetch error:', fetchError)
-      // Fallback to test mode if API call fails
-      return { 
-        success: true, 
-        data: { sid: 'TEST_SID_' + Date.now(), fallback: true }, 
-        message: 'OTP sent successfully (Test Mode)' 
-      }
-    }
-    
-  } catch (error) {
-    console.error('Error sending OTP:', error)
-    
-    // Always return success to ensure the flow continues
-    return { 
-      success: true, 
-      data: { sid: 'TEST_SID_' + Date.now(), errorHandled: true }, 
-      message: 'OTP sent successfully (Test Mode)' 
-    }
-  }
-}
-
-export const verifyOTP = async (phone, token) => {
-  try {
-    console.log('Verifying OTP for:', phone, 'with token:', token)
-    
-    // Always return success in production to avoid issues with backend connectivity
-    // This is a temporary solution until the backend OTP service is fully operational
-    if (isProduction || token === '123456') {
-      console.log('Production mode or test OTP: Using test mode for OTP verification')
-      return { 
-        success: true, 
-        data: { verified: true, environment: isProduction ? 'production' : 'development' }, 
-        message: 'OTP verified successfully (Test Mode)' 
-      }
-    }
-    
-    // Attempt to call the backend API
-    try {
-      const response = await fetch(getApiUrl('otp/verify-otp'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: phone,
-          otp: token
-        }),
-      })
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Server error:', errorText)
-        throw new Error(`Server error: ${response.status} - ${errorText}`)
-      }
-      
-      const data = await response.json()
-      console.log('OTP Verify Response:', data)
-      
-      if (data.success) {
-        return { success: true, data, message: data.message }
-      } else {
-        throw new Error(data.message || 'Invalid OTP')
-      }
-    } catch (fetchError) {
-      console.error('Fetch error:', fetchError)
-      // Fallback to test mode if API call fails
-      return { 
-        success: true, 
-        data: { verified: true, fallback: true }, 
-        message: 'OTP verified successfully (Fallback Mode)' 
-      }
-    }
-    
-  } catch (error) {
-    console.error('Error verifying OTP:', error)
-    
-    // Always return success for test OTP
-    if (token === '123456') {
-      return { 
-        success: true, 
-        data: { verified: true, errorHandled: true }, 
-        message: 'OTP verified successfully (Test Mode)' 
-      }
-    }
-    
-    // Otherwise return error
-    return { success: false, error: 'Invalid OTP. Please try again or request a new code.' }
-  }
-}
-
-export const resendOTP = async (phone, method = 'both') => {
-  try {
-    console.log('Resending OTP to:', phone, 'via', method)
-    
-    // Always return success in production to avoid issues with backend connectivity
-    if (isProduction) {
-      console.log('Production mode: Using test mode for OTP resend')
-      return { 
-        success: true, 
-        data: { sid: 'TEST_RESEND_' + Date.now(), environment: 'production' }, 
-        message: 'OTP resent successfully (Test Mode)' 
-      }
-    }
-    
-    // Attempt to call the backend API
-    try {
-      const response = await fetch(getApiUrl('otp/resend-otp'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: phone,
-          method: method
-        }),
-      })
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Server error:', errorText)
-        throw new Error(`Server error: ${response.status} - ${errorText}`)
-      }
-      
-      const data = await response.json()
-      console.log('OTP Resend Response:', data)
-      
-      if (data.success) {
-        return { success: true, data, message: data.message }
-      } else {
-        throw new Error(data.message || 'Failed to resend OTP')
-      }
-    } catch (fetchError) {
-      console.error('Fetch error:', fetchError)
-      // Fallback to test mode if API call fails
-      return { 
-        success: true, 
-        data: { sid: 'TEST_RESEND_' + Date.now(), fallback: true }, 
-        message: 'OTP resent successfully (Fallback Mode)' 
-      }
-    }
-    
-  } catch (error) {
-    console.error('Error resending OTP:', error)
-    
-    // Always return success to ensure flow continues
-    return { 
-      success: true, 
-      data: { sid: 'TEST_RESEND_' + Date.now(), errorHandled: true }, 
-      message: 'OTP resent successfully (Test Mode)' 
-    }
-  }
-}
-
 // Google authentication
 export const signInWithGoogle = async () => {
   try {
-    // Use callback URL first, which will handle redirecting to dashboard
-    const redirectUrl = `${window.location.origin}/auth/callback`;
-    
-    console.log('Google OAuth login started');
-    console.log('OAuth redirect URL:', redirectUrl);
-    
+    console.log('Initiating Google sign in')
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl,
+        redirectTo: window.location.origin + '/dashboard',
         queryParams: {
           access_type: 'offline',
-          prompt: 'consent'
-        },
-        skipBrowserRedirect: false // Let Supabase handle the redirect directly
+          prompt: 'consent',
+        }
       }
     })
-    
+
     if (error) {
-      console.error('Error with Google sign in:', error);
-      throw error;
+      console.error('Google sign in error:', error)
+      return { success: false, error: error.message }
     }
-    
-    console.log('Google sign in initiated successfully');
+
+    console.log('Google sign in initiated successfully', data)
     return { success: true, data }
   } catch (error) {
-    console.error('Error with Google sign in:', error)
+    console.error('Google sign in exception:', error)
     return { success: false, error: error.message }
   }
 }
 
+// Sign out
 export const signOut = async () => {
   try {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut()
     
     if (error) {
-      console.error('Error signing out:', error);
-      throw error;
+      console.error('Sign out error:', error)
+      return { success: false, error: error.message }
     }
     
-    console.log('User signed out successfully');
+    // Remove user data from local storage
+    localStorage.removeItem('currentUser')
     return { success: true }
   } catch (error) {
-    console.error('Error signing out:', error);
+    console.error('Sign out exception:', error)
     return { success: false, error: error.message }
   }
 }
 
+// Get current user
 export const getCurrentUser = () => {
-  return supabase.auth.getUser()
-}
-
-// Export a direct sign in function for username/password auth
-export const signInWithEmail = async (email, password) => {
-  try {
-    console.log('Attempting to sign in with email:', email);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error('Supabase sign in error:', error);
-      throw error;
-    }
-
-    console.log('Successfully signed in with email');
-    return { success: true, user: data.user, session: data.session }
-  } catch (error) {
-    console.error('Error with email sign in:', error);
-    return { success: false, error: error.message }
+  // First check if we have a user in local storage
+  const localUser = localStorage.getItem('currentUser')
+  if (localUser) {
+    return { user: JSON.parse(localUser) }
   }
+  
+  // Otherwise check Supabase (for Google auth)
+  return supabase.auth.getUser()
 }
