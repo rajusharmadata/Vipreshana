@@ -4,7 +4,6 @@ const figlet = require('figlet');
 const Configs = require('./configs/Configs');
 const connectMongoDB = require('./Databases/ConnectDB');
 const Controllers = require('./Controllers/index.controllers');
-
 const app = express();
 
 // Middleware
@@ -25,6 +24,11 @@ app.get('/api/bookings/:phone', Controllers.GetBookingByPhoneController);
 
 // Login
 app.post('/login', Controllers.UserLoginController);
+
+// User Profile Endpoints
+app.get('/api/user/profile', Controllers.GetUserProfileController);
+app.put('/api/user/profile', Controllers.UpdateUserProfileController);
+app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
 // Booking Endpoints
 app.post('/api/bookings', Controllers.BookingController);
