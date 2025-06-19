@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar'; // Add this import
-
+import PageMeta from './components/Pagemeta';
+import FAQSection from './components/FAQs';
 const HowItWorks = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -37,6 +38,7 @@ const HowItWorks = () => {
 
   return (
     <>
+    <PageMeta /> 
       <Navbar />
       <div className={`min-h-screen transition-all duration-300 ${
         isDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 text-gray-900'
@@ -141,6 +143,7 @@ const HowItWorks = () => {
           </motion.div>
         </div>
       </div>
+      <FAQSection isDark={isDark} />
     </>
   );
 };
