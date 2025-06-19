@@ -19,6 +19,7 @@ import Location from './Location';
 import AdminDashboard from './AdminDashboard';
 import User from './components/User';
 import Driver from './components/Driver';
+import Layout from './Layout';
 
 function AppRoutes() {
   const location = useLocation();
@@ -26,6 +27,7 @@ function AppRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/about" element={<About />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
@@ -41,6 +43,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/user" element={<User />} />
         <Route path="/driver" element={<Driver />} />
+        </Route>
         
       </Routes>
     </AnimatePresence>
