@@ -26,6 +26,9 @@ app.get('/api/bookings/:phone', Controllers.GetBookingByPhoneController);
 // Login
 app.post('/login', Controllers.UserLoginController);
 
+//Forgot password
+app.post('/forgot-password', Controllers.ForgotPasswordController);
+
 // Booking Endpoints
 app.post('/api/bookings', Controllers.BookingController);
 
