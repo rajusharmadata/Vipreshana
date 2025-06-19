@@ -29,12 +29,30 @@ const AuthSecurityHandler = ({ children }) => {
     // This runs on every route change to ensure token security
     const cleanHashAndTokens = () => {
       // Check if we have sensitive info in the URL that needs to be cleaned
-      if (window.location.hash && window.location.hash.includes('access_token')) {
+      const hasTokenInHash = window.location.hash && (
+        window.location.hash.includes('access_token') ||
+        window.location.hash.includes('refresh_token') ||
+        window.location.hash.includes('id_token')
+      );
+      
+      const hasTokenInSearch = window.location.search && (
+        window.location.search.includes('access_token') ||
+        window.location.search.includes('refresh_token') ||
+        window.location.search.includes('id_token')
+      );
+      
+      if (hasTokenInHash || hasTokenInSearch) {
         // Keep track of the path without tokens
         const cleanPath = window.location.pathname;
         // Replace URL with a clean version (no hash or query params with tokens)
         window.history.replaceState(null, document.title, cleanPath);
         console.log('URL cleaned of sensitive tokens');
+        
+        // Additional check for any remaining tokens
+        if (window.location.toString().includes('token')) {
+          console.warn('Token still detected in URL after cleaning attempt');
+          window.history.replaceState(null, document.title, '/dashboard');
+        }
       }
     };
 
@@ -48,10 +66,19 @@ const AuthSecurityHandler = ({ children }) => {
 
     // Add event listener for URL changes
     window.addEventListener('popstate', handleLocationChange);
+    
+    // Set up additional URL monitoring for security
+    const intervalId = setInterval(() => {
+      if (window.location.toString().includes('token')) {
+        console.warn('Token detected in URL during monitoring');
+        cleanHashAndTokens();
+      }
+    }, 1000);
 
-    // Clean up event listener
+    // Clean up event listeners
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
+      clearInterval(intervalId);
     };
   }, []);
 

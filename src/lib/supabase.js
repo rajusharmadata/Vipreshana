@@ -31,6 +31,7 @@ console.log('Using API URL:', API_BASE_URL)
 
 // For local development, check if we should use absolute or relative URLs
 const isProduction = process.env.NODE_ENV === 'production'
+// eslint-disable-next-line no-unused-vars
 const getApiUrl = (endpoint) => {
   // In production, use the full URL to the backend
   if (isProduction) {
@@ -40,18 +41,26 @@ const getApiUrl = (endpoint) => {
   return `${API_BASE_URL}/${endpoint}`.replace(/\/+/g, '/')
 }
 
-// Google authentication
+// Google authentication with enhanced security
 export const signInWithGoogle = async () => {
   try {
     console.log('Initiating Google sign in')
+    
+    // Clean any existing tokens from URL before starting auth flow
+    if (window.location.hash || window.location.search) {
+      window.history.replaceState(null, document.title, window.location.pathname);
+    }
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/dashboard',
+        redirectTo: window.location.origin + '/auth/callback',
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
-        }
+        },
+        skipBrowserRedirect: false, // Ensure we use the proper redirect flow
+        flowType: 'pkce', // Use PKCE flow for better security
       }
     })
 
@@ -60,7 +69,7 @@ export const signInWithGoogle = async () => {
       return { success: false, error: error.message }
     }
 
-    console.log('Google sign in initiated successfully', data)
+    console.log('Google sign in initiated successfully')
     return { success: true, data }
   } catch (error) {
     console.error('Google sign in exception:', error)

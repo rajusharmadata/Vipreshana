@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar'; // Add this import

@@ -18,13 +18,22 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState(null);
   
-  // Function to clean URL of tokens for security
+  // Enhanced function to clean URL of tokens for security
   const cleanUrlOfTokens = () => {
     // Check if we have hash or query strings with sensitive data
-    if (
-      (window.location.hash && window.location.hash.includes('access_token')) ||
-      (window.location.search && window.location.search.includes('access_token'))
-    ) {
+    const hasTokenInHash = window.location.hash && (
+      window.location.hash.includes('access_token') || 
+      window.location.hash.includes('refresh_token') ||
+      window.location.hash.includes('id_token')
+    );
+    
+    const hasTokenInSearch = window.location.search && (
+      window.location.search.includes('access_token') ||
+      window.location.search.includes('refresh_token') ||
+      window.location.search.includes('id_token')
+    );
+    
+    if (hasTokenInHash || hasTokenInSearch) {
       // For auth callback URLs, replace with dashboard directly
       if (window.location.pathname.includes('/auth/callback')) {
         window.history.replaceState(null, document.title, '/dashboard');
@@ -33,6 +42,12 @@ export const AuthProvider = ({ children }) => {
         // For other URLs, just clean the params/hash
         window.history.replaceState(null, document.title, window.location.pathname);
         console.log('URL cleaned of sensitive tokens');
+      }
+      
+      // Additional check for any remaining tokens
+      if (window.location.toString().includes('token')) {
+        console.warn('Token still detected in URL after cleaning attempt');
+        window.history.replaceState(null, document.title, '/dashboard');
       }
     }
   };
@@ -117,15 +132,26 @@ export const AuthProvider = ({ children }) => {
         // Handle specific auth events
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           console.log('User signed in or token refreshed:', newSession?.user?.email);
+          // Extra security: clean URL again after sign-in
+          setTimeout(cleanUrlOfTokens, 100);
         } else if (event === 'SIGNED_OUT') {
           console.log('User signed out');
         }
       }
     );
 
+    // Set up additional URL monitoring for security
+    const intervalId = setInterval(() => {
+      if (window.location.toString().includes('token')) {
+        console.warn('Token detected in URL during monitoring');
+        cleanUrlOfTokens();
+      }
+    }, 1000);
+
     return () => {
       console.log('AuthProvider unmounting, cleaning up listener');
       authListener?.subscription.unsubscribe();
+      clearInterval(intervalId);
     };
   }, []);
 
