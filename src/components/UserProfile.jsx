@@ -98,7 +98,7 @@ const UserProfile = () => {
         newPassword: '',
         confirmPassword: '',
       });
-      setShowPasswordForm(false);
+      
       toast.success('Password changed successfully!');
     }, 1000);
   };

@@ -3,6 +3,7 @@ import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar'; // Add this import
 import PageMeta from './components/Pagemeta';
+import FAQSection from './components/FAQs';
 const HowItWorks = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -142,6 +143,7 @@ const HowItWorks = () => {
           </motion.div>
         </div>
       </div>
+      <FAQSection isDark={isDark} />
     </>
   );
 };
