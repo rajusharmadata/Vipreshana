@@ -70,7 +70,6 @@ const Navbar = () => {
           backgroundColor: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.15)',
         }}
       >
-        {/* Brand */}
         <Link
           to="/"
           className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent hover:no-underline focus:no-underline visited:text-transparent focus:text-transparent"
@@ -98,7 +97,7 @@ const Navbar = () => {
             {isDark ? '☀️' : '🌙'}
           </button>
 
-          {/* User Avatar (only when logged in) */}
+          
           {user && (
             <div className="relative">
               <button

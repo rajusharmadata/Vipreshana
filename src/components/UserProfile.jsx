@@ -3,7 +3,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { User, Mail, Phone, Lock, Edit, Save, X, Key } from 'lucide-react';
+import { User, Mail, Phone } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import PageMeta from '../components/Pagemeta';
 
@@ -23,7 +23,7 @@ const UserProfile = () => {
     newPassword: '',
     confirmPassword: '',
   });
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
+
 
   // Load user data
   useEffect(() => {
