@@ -19,7 +19,7 @@ const Navbar = () => {
     <>
       {/* Frosted Glass Navbar */}
       <nav
-        className={` fixed top-0 left-0 w-full h-[4.5rem] z-50 px-6 py-4 flex items-center justify-between
+        className={` fixed top-0 left-0 w-full h-[4.5rem] z-50 px-4 py-2 flex items-center justify-between
           border-b border-white/10 dark:border-white/20 shadow-md z-80 transition-all duration-300`}
         style={{
           WebkitBackdropFilter: 'blur(24px)',
@@ -30,10 +30,10 @@ const Navbar = () => {
         {/* Brand */}
         <Link
           to="/"
-          className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent hover:no-underline focus:no-underline visited:text-transparent focus:text-transparent"
+          className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent hover:no-underline focus:no-underline visited:text-transparent focus:text-transparent"
           onClick={closeMenu}
         >
-          Vipreshana
+        <img src="/logo.png" alt=" Vipreshana Logo" className="h-12 w-8 inline-block mr-1" />Vipreshana
         </Link>
 
         {/* Desktop Navigation Links */}
