@@ -3,6 +3,8 @@ import { useTheme } from './context/ThemeContext';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar'; // <-- Import Navbar
 import PageMeta from './components/Pagemeta';
+import FAQSection from './components/FAQs'; // Import FAQSection component
+
 const About = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -62,7 +64,7 @@ const About = () => {
             {
               icon: '📍',
               title: 'Live Tracking',
-              desc: 'Track your delivery’s exact location in real-time. No more wondering where your package is.',
+              desc: "Track your delivery's exact location in real-time. No more wondering where your package is.",
             },
             {
               icon: '💬',
@@ -108,7 +110,7 @@ const About = () => {
         <motion.div className="mt-16 max-w-3xl text-center" variants={itemVariants}>
           <h2 className="text-2xl font-bold mb-4">Our Mission 🌍</h2>
           <p className="text-lg leading-relaxed">
-            We’re not just delivering goods — we’re delivering trust, visibility, and speed. Vipreshana is on a mission to
+            We're not just delivering goods — we're delivering trust, visibility, and speed. Vipreshana is on a mission to
             bring logistics into the modern era through smart tech, transparent systems, and user-first experiences.
           </p>
         </motion.div>
@@ -125,6 +127,9 @@ const About = () => {
           </button>
         </motion.div>
       </motion.div>
+      
+      {/* FAQ Section */}
+      <FAQSection isDark={isDark} />
     </>
   );
 };

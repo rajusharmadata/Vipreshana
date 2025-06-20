@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { FiInfo, FiMap, FiPhone, FiUser,FiLogOut } from "react-icons/fi";
 
 const Navbar = () => {
@@ -8,6 +9,20 @@ const Navbar = () => {
   const isDark = theme === "dark";
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated, signOut } = useAuth();
+
+  useEffect(() => {
+    // Check if user is logged in via localStorage
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }, []);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const userDropdownRef = useRef(null);
   const avatarButtonRef = useRef(null);
@@ -64,6 +79,38 @@ const Navbar = () => {
     window.location.href = "/login";
   };
 
+  const handleLogout = async () => {
+    try {
+      // If using Supabase auth
+      if (signOut) {
+        await signOut();
+      }
+      
+      // Clear local storage
+      localStorage.removeItem('user');
+      localStorage.removeItem('currentUser');
+      
+      // Update state
+      setUser(null);
+      
+      // Close mobile menu if open
+      closeMenu();
+      
+      // Redirect to home page
+      navigate('/', { replace: true });
+      
+      // Optional: Show toast notification
+      if (window.toast) {
+        window.toast.success('Logged out successfully');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+  // Check if user is logged in
+  const isLoggedIn = isAuthenticated || !!user;
+
   return (
     <>
       {/* Frosted Glass Navbar */}
@@ -79,6 +126,23 @@ const Navbar = () => {
         }}
       >
         {/* Desktop Navigation Links */}
+        <div className="hidden md:flex items-center gap-6 text-base font-medium">
+          <Link to="/about" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>About</Link>
+          <Link to="/how-it-works" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>How It Works</Link>
+          <Link to="/contact" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>Contact</Link>
+          
+          {/* Only show Dashboard and Logout when logged in */}
+          {isLoggedIn && (
+            <>
+              <Link to="/dashboard" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>Dashboard</Link>
+              <button 
+                onClick={handleLogout}
+                className={`hover:text-red-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
+              >
+                Logout
+              </button>
+            </>
+          )}
         <div className="flex w-full items-center justify-between">
           {/* Left: Logo */}
           <Link
@@ -133,7 +197,6 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-
         {/* Right side controls */}
         <div className="flex items-center gap-4">
           {/* Theme Toggle */}
@@ -234,6 +297,9 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div
+        className={`fixed top-0 right-0 h-full w-60 transform transition-transform  duration-300 z-50
+        className={`mobile-menu fixed top-0 right-0 h-full w-60 transform transition-transform duration-300 z-40
+          ${menuOpen ? 'translate-x-0' : 'translate-x-full'}
         className={`mobile-menu fixed top-0 right-0 h-full w-60 transform transition-transform duration-300 z-50
           ${menuOpen ? "translate-x-0" : "translate-x-full"}
           md:hidden flex flex-col border-r border-white/10 dark:border-white/20`}
@@ -255,7 +321,17 @@ const Navbar = () => {
             &times;
           </button>
         </div>
-
+        <nav className="flex flex-col px-8 gap-6 mt-8 text-lg font-medium">
+          <Link to="/about" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>About</Link>
+          <Link to="/how-it-works" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>How It Works</Link>
+          <Link to="/contact" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>Contact</Link>
+          
+          {/* Only show Dashboard and Logout when logged in for mobile */}
+          {isLoggedIn && (
+            <>
+              <Link to="/dashboard" onClick={closeMenu} className={`${isDark ? 'text-white' : 'text-gray-900'} hover:text-blue-400 transition`}>Dashboard</Link>
+              <button 
+                onClick={handleLogout}
         {/* User info in mobile menu */}
         {user && (
           <div

@@ -5,7 +5,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import Navbar from './components/Navbar'; // Import Navbar
+import { signInWithGoogle } from './lib/supabase';
+import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
@@ -17,6 +18,14 @@ const Login = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
+  // Helper function to clean URL of any tokens
+  const cleanUrlOfTokens = () => {
+    if (window.location.hash || window.location.search) {
+      window.history.replaceState(null, document.title, window.location.pathname);
+      console.log('URL cleaned of any parameters during login');
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -25,11 +34,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    // Clean URL before starting login process
+    cleanUrlOfTokens();
+    
     try {
       const response = await axios.post(`${API_BASE_URL}/login`, formData);
       const { user, redirectUrl, message } = response.data;
+      
       if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
+        // Store user in localStorage with proper security measures
+        // Don't store sensitive information like passwords
+        const safeUserData = {
+          id: user.id,
+          name: user.name,
+          phone: user.phone,
+          email: user.email,
+          role: user.role
+        };
+        
+        localStorage.setItem("user", JSON.stringify(safeUserData));
+        console.log('User data stored securely in localStorage');
       } else {
         console.warn("Login response missing user object", response.data);
       }
@@ -48,10 +73,16 @@ const Login = () => {
         },
       });
 
+      // Use a default redirect if none provided
+      const finalRedirectUrl = redirectUrl || '/dashboard';
+      
       setTimeout(() => {
         setIsLoading(false);
-        navigate(redirectUrl);
-      }, 3000);
+        // Clean URL one more time before navigation
+        cleanUrlOfTokens();
+        // Use replace: true to prevent going back to login page
+        navigate(finalRedirectUrl, { replace: true });
+      }, 2000);
     } catch (error) {
       setIsLoading(false);
       if (!toast.isActive('login-error')) {
@@ -69,6 +100,48 @@ const Login = () => {
           },
         });
       }
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      // Clean URL before starting OAuth process
+      cleanUrlOfTokens();
+      
+      // eslint-disable-next-line no-unused-vars
+      const { success, data, error } = await signInWithGoogle();
+      
+      if (!success) throw new Error(error);
+      
+      toast.success('Signing in with Google...', {
+        position: 'top-center',
+        autoClose: 1500,
+        style: {
+          backgroundColor: '#28a745',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          borderRadius: '12px',
+          textAlign: 'center',
+        },
+      });
+      
+      // OAuth will handle the redirect to dashboard now
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      toast.error(`Google sign-in failed: ${error.message || 'Please try again'}`, {
+        position: 'top-center',
+        style: {
+          backgroundColor: '#e60023',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          borderRadius: '12px',
+          textAlign: 'center',
+        },
+      });
+      setIsLoading(false);
     }
   };
 
@@ -188,6 +261,45 @@ const Login = () => {
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
+              
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className={`w-full border-t ${isDark ? 'border-gray-700' : 'border-gray-300'}`}></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className={`px-2 ${isDark ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>Or continue with</span>
+                </div>
+              </div>
+              
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className={`w-full flex items-center justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-medium ${
+                  isDark
+                    ? 'bg-gray-700 text-white border border-gray-600 hover:bg-gray-600'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+                  <path
+                    d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.522 0-10 4.478-10 10s4.478 10 10 10c8.396 0 10.54-7.752 9.71-11.666l-9.71 0.001z"
+                    fill="#FFC107"
+                  />
+                  <path
+                    d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.522 0-10 4.478-10 10s4.478 10 10 10c8.396 0 10.54-7.752 9.71-11.666l-9.71 0.001z"
+                    fill="#FF3D00"
+                  />
+                  <path
+                    d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.522 0-10 4.478-10 10s4.478 10 10 10c8.396 0 10.54-7.752 9.71-11.666l-9.71 0.001z"
+                    fill="#4CAF50"
+                  />
+                  <path
+                    d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.522 0-10 4.478-10 10s4.478 10 10 10c8.396 0 10.54-7.752 9.71-11.666l-9.71 0.001z"
+                    fill="#1976D2"
+                  />
+                </svg>
+                Continue with Google
+              </button>
             </form>
 
             <p
@@ -195,7 +307,7 @@ const Login = () => {
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}
             >
-              Don’t have an account?{' '}
+              Don't have an account?{' '}
               <Link
                 to="/register"
                 className={`font-semibold hover:underline ${

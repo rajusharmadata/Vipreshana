@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, User, Mail, Phone, Shield, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, User, Mail, Phone, Shield, AlertCircle, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
