@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { FiInfo, FiMap, FiPhone, FiUser,FiLogOut } from "react-icons/fi";
 
 const Navbar = () => {
@@ -8,6 +9,20 @@ const Navbar = () => {
   const isDark = theme === "dark";
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated, signOut } = useAuth();
+
+  useEffect(() => {
+    // Check if user is logged in via localStorage
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }, []);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const userDropdownRef = useRef(null);
   const avatarButtonRef = useRef(null);
@@ -59,10 +74,37 @@ const Navbar = () => {
       .join("");
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+  const handleLogout = async () => {
+    try {
+      // If using Supabase auth
+      if (signOut) {
+        await signOut();
+      }
+      
+      // Clear local storage
+      localStorage.removeItem('user');
+      localStorage.removeItem('currentUser');
+      
+      // Update state
+      setUser(null);
+      
+      // Close mobile menu if open
+      closeMenu();
+      
+      // Redirect to home page
+      navigate('/', { replace: true });
+      
+      // Optional: Show toast notification
+      if (window.toast) {
+        window.toast.success('Logged out successfully');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
+
+  // Check if user is logged in
+  const isLoggedIn = isAuthenticated || !!user;
 
   return (
     <>
@@ -78,7 +120,6 @@ const Navbar = () => {
             : "rgba(255,255,255,0.15)",
         }}
       >
-        {/* Desktop Navigation Links */}
         <div className="flex w-full items-center justify-between">
           {/* Left: Logo */}
           <Link
@@ -125,110 +166,118 @@ const Navbar = () => {
                 <FiPhone className="text-lg" />
                 Contact
               </Link>
+              
+              {/* Only show Dashboard and Logout when logged in */}
+              {isLoggedIn && (
+                <>
+                  <Link to="/dashboard" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>Dashboard</Link>
+                  <button 
+                    onClick={handleLogout}
+                    className={`hover:text-red-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Theme Toggle + User Avatar + Mobile Menu Button */}
             <div className="flex items-center gap-4">
-              {/* Keep the theme toggle, user dropdown, and hamburger menu as is */}
-            </div>
-          </div>
-        </div>
-
-        {/* Right side controls */}
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-full transition-all duration-300 shadow
-              ${isDark
-                ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
-                : "bg-gray-800 text-yellow-400 hover:bg-gray-700"
-              }`}
-            aria-label="Toggle theme"
-          >
-            {isDark ? "☀️" : "🌙"}
-          </button>
-
-          {user && (
-            <div className="relative">
+              {/* Theme Toggle */}
               <button
-                ref={avatarButtonRef}
-                onClick={toggleUserDropdown}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-200
+                onClick={toggleTheme}
+                className={`p-2 rounded-full transition-all duration-300 shadow
                   ${isDark
                     ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
                     : "bg-gray-800 text-yellow-400 hover:bg-gray-700"
                   }`}
-                aria-label="User menu"
+                aria-label="Toggle theme"
               >
-                {getInitials(user.name)}
+                {isDark ? "☀️" : "🌙"}
               </button>
 
-              {/* User Dropdown */}
-              {showUserDropdown && (
-                <div
-                  ref={userDropdownRef}
-                  className={`absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1 z-50
-                    ${isDark
-                      ? "bg-gray-800 border border-gray-700"
-                      : "bg-white border border-gray-200"
-                    }`}
-                >
-                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {user.email}
-                    </p>
-                  </div>
-                  <Link
-                    to="/profile"
-                    className={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
-                      ${isDark ? "text-white" : "text-gray-700"}`}
-                    onClick={() => setShowUserDropdown(false)}
-                  >
-                    My Profile
-                  </Link>
+              {user && (
+                <div className="relative">
                   <button
-                    onClick={handleLogout}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
-                      ${isDark ? "text-white" : "text-gray-700"}`}
+                    ref={avatarButtonRef}
+                    onClick={toggleUserDropdown}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-200
+                      ${isDark
+                        ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
+                        : "bg-gray-800 text-yellow-400 hover:bg-gray-700"
+                      }`}
+                    aria-label="User menu"
                   >
-                    Logout
+                    {getInitials(user.name)}
                   </button>
+
+                  {/* User Dropdown */}
+                  {showUserDropdown && (
+                    <div
+                      ref={userDropdownRef}
+                      className={`absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1 z-50
+                        ${isDark
+                          ? "bg-gray-800 border border-gray-700"
+                          : "bg-white border border-gray-200"
+                        }`}
+                    >
+                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                        <p className="text-sm font-medium">{user.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
+                          ${isDark ? "text-white" : "text-gray-700"}`}
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700
+                          ${isDark ? "text-white" : "text-gray-700"}`}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* Hamburger Menu Button */}
-          <button
-            className={`md:hidden p-2 focus:outline-none rounded transition-colors duration-200
-              ${isDark
-                ? "bg-gray-800 text-white hover:bg-gray-700"
-                : "bg-gray-200 text-gray-900 hover:bg-gray-300"
-              }`}
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? (
-              <span className="text-xl font-bold">&times;</span>
-            ) : (
-              <>
-                <span
-                  className={`block w-6 h-0.5 mb-1 ${isDark ? "bg-white" : "bg-gray-900"
-                    }`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 mb-1 ${isDark ? "bg-white" : "bg-gray-900"
-                    }`}
-                ></span>
-                <span
-                  className={`block w-6 h-0.5 ${isDark ? "bg-white" : "bg-gray-900"
-                    }`}
-                ></span>
-              </>
-            )}
-          </button>
+              {/* Hamburger Menu Button */}
+              <button
+                className={`md:hidden p-2 focus:outline-none rounded transition-colors duration-200
+                  ${isDark
+                    ? "bg-gray-800 text-white hover:bg-gray-700"
+                    : "bg-gray-200 text-gray-900 hover:bg-gray-300"
+                  }`}
+                onClick={toggleMenu}
+                aria-label="Toggle menu"
+              >
+                {menuOpen ? (
+                  <span className="text-xl font-bold">&times;</span>
+                ) : (
+                  <>
+                    <span
+                      className={`block w-6 h-0.5 mb-1 ${isDark ? "bg-white" : "bg-gray-900"
+                        }`}
+                    ></span>
+                    <span
+                      className={`block w-6 h-0.5 mb-1 ${isDark ? "bg-white" : "bg-gray-900"
+                        }`}
+                    ></span>
+                    <span
+                      className={`block w-6 h-0.5 ${isDark ? "bg-white" : "bg-gray-900"
+                        }`}
+                    ></span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
@@ -324,7 +373,6 @@ const Navbar = () => {
             </>
           )}
         </nav>
-
       </div>
 
       {/* Overlay */}
