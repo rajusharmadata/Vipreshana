@@ -21,7 +21,8 @@ import User from './components/User';
 import Driver from './components/Driver';
 import Layout from './Layout';
 import Profile from './profile'; 
-import PublicRoute from './routes/PublicRoute';
+import PublicRoute from './routes/PublicRoute';import NotFound from './NotFound';
+
 function AppRoutes() {
   const location = useLocation();
 
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Route path="/user" element={<User />} />
           <Route path="/driver" element={<Driver />} />
           <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
         </Route>
         
       </Routes>
