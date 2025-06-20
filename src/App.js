@@ -22,6 +22,8 @@ import AdminDashboard from './AdminDashboard';
 import User from './components/User';
 import Driver from './components/Driver';
 import Layout from './Layout';
+import Profile from './profile'; 
+import PublicRoute from './routes/PublicRoute';import NotFound from './NotFound';
 
 // Auth security middleware to protect user tokens
 const AuthSecurityHandler = ({ children }) => {
@@ -122,7 +124,7 @@ function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<PublicRoute><Dashboard/></PublicRoute>} />
         <Route path="/about" element={<About />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/bookings" element={<Bookings />} />
@@ -130,8 +132,8 @@ function AppRoutes() {
         <Route path="/login-dashboard" element={<LoginDashboard />} />
         <Route path="/logindashboard" element={<LoginDashboard />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/register" element={<Registration />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<PublicRoute><Registration /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/location" element={<Location />} />
@@ -141,6 +143,8 @@ function AppRoutes() {
         <Route path="/auth/callback" element={<AuthCallback />} />
         {/* Catch-all for auth callbacks with hash fragments */}
         <Route path="/auth/*" element={<AuthCallback />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
       <ToastContainer

@@ -3,7 +3,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const figlet = require('figlet');
 require('dotenv').config();
-
+const Configs = require('./configs/Configs');
+const connectMongoDB = require('./Databases/ConnectDB');
+const Controllers = require('./Controllers/index.controllers');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -22,6 +24,13 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
+app.use(cors());
+// 404 Handler 
+app.use((req, res, next) => {
+  res.status(404).json({ error: 'Not Found', message: 'The requested resource does not exist.' });
+});
+// MongoDB Connection
+connectMongoDB(Configs.DB_URI);
 
 // MongoDB connection
 if (process.env.MONGODB_URI) {
@@ -62,6 +71,16 @@ app.get('/health', (req, res) => {
     }
   });
 });
+// User Profile Endpoints
+app.get('/api/user/profile', Controllers.GetUserProfileController);
+app.put('/api/user/profile', Controllers.UpdateUserProfileController);
+app.put('/api/user/password', Controllers.UpdateUserPasswordController);
+
+// Booking Endpoints
+app.post('/api/bookings', Controllers.BookingController);
+
+// Get All Bookings
+app.get('/api/details', Controllers.GetAllBookingController);
 
 // Add a test route to verify the server is running
 app.get('/api/test', (req, res) => {
