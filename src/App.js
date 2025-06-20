@@ -20,6 +20,7 @@ import AdminDashboard from './AdminDashboard';
 import User from './components/User';
 import Driver from './components/Driver';
 import Layout from './Layout';
+import NotFound from './NotFound';
 
 function AppRoutes() {
   const location = useLocation();
@@ -43,6 +44,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/user" element={<User />} />
         <Route path="/driver" element={<Driver />} />
+        <Route path="*" element={<NotFound />} />
         </Route>
         
       </Routes>
