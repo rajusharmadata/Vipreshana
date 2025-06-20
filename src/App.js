@@ -30,31 +30,30 @@ const AuthSecurityHandler = ({ children }) => {
   useEffect(() => {
     // This runs on every route change to ensure token security
     const cleanHashAndTokens = () => {
-      // Check if we have sensitive info in the URL that needs to be cleaned
-      const hasTokenInHash = window.location.hash && (
-        window.location.hash.includes('access_token') ||
-        window.location.hash.includes('refresh_token') ||
-        window.location.hash.includes('id_token')
-      );
+      // Always clean URL regardless of path to ensure no tokens are ever exposed
+      const currentUrl = window.location.toString();
       
-      const hasTokenInSearch = window.location.search && (
-        window.location.search.includes('access_token') ||
-        window.location.search.includes('refresh_token') ||
-        window.location.search.includes('id_token')
-      );
+      // Check for any sensitive tokens in the URL
+      const hasSensitiveData = 
+        currentUrl.includes('access_token') || 
+        currentUrl.includes('refresh_token') ||
+        currentUrl.includes('id_token') ||
+        currentUrl.includes('token=') ||
+        currentUrl.includes('authorization=') ||
+        currentUrl.includes('auth=');
       
-      if (hasTokenInHash || hasTokenInSearch) {
-        // Keep track of the path without tokens
-        const cleanPath = window.location.pathname;
-        // Replace URL with a clean version (no hash or query params with tokens)
-        window.history.replaceState(null, document.title, cleanPath);
-        console.log('URL cleaned of sensitive tokens');
-        
-        // Additional check for any remaining tokens
-        if (window.location.toString().includes('token')) {
-          console.warn('Token still detected in URL after cleaning attempt');
-          window.history.replaceState(null, document.title, '/dashboard');
-        }
+      // Handle auth callback paths specially
+      if (window.location.pathname.includes('/auth/')) {
+        // For auth callbacks, always redirect to dashboard without exposing tokens
+        window.history.replaceState(null, document.title, '/dashboard');
+        console.log('Auth callback URL cleaned and redirected to dashboard');
+        return;
+      }
+      
+      // For any other page with tokens, just remove the query/hash part
+      if (hasSensitiveData || window.location.hash || window.location.search) {
+        window.history.replaceState(null, document.title, window.location.pathname);
+        console.log('URL cleaned of sensitive data');
       }
     };
 
@@ -68,18 +67,28 @@ const AuthSecurityHandler = ({ children }) => {
 
     // Add event listener for URL changes
     window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
     
-    // Set up additional URL monitoring for security
+    // Set up more aggressive URL monitoring for security
     const intervalId = setInterval(() => {
-      if (window.location.toString().includes('token')) {
-        console.warn('Token detected in URL during monitoring');
+      const currentUrl = window.location.toString();
+      if (
+        currentUrl.includes('token') || 
+        currentUrl.includes('auth') || 
+        currentUrl.includes('access_') || 
+        currentUrl.includes('refresh_') ||
+        window.location.hash || 
+        window.location.search
+      ) {
+        console.warn('Potentially sensitive data detected in URL during monitoring');
         cleanHashAndTokens();
       }
-    }, 1000);
+    }, 500);
 
     // Clean up event listeners
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
       clearInterval(intervalId);
     };
   }, []);
@@ -93,18 +102,32 @@ const AuthCallback = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // The actual auth state is handled by the AuthContext
-    // This component just redirects after the callback is processed
-    console.log('Auth callback received - processing OAuth redirect');
-    console.log('Current path:', location.pathname);
-    console.log('Has hash:', !!location.hash);
-
-    // Clean the URL by replacing the current history state to remove tokens
-    // This handles both /auth/callback and /auth/callback# formats
-    window.history.replaceState(null, document.title, '/dashboard');
-
-    // Force redirect to dashboard
-    navigate('/dashboard', { replace: true });
+    // Immediately clean URL to prevent token exposure
+    const cleanAndRedirect = () => {
+      console.log('Auth callback received - processing OAuth redirect');
+      
+      // Immediately replace the current URL to remove any tokens
+      window.history.replaceState(null, document.title, '/dashboard');
+      
+      // Force redirect to dashboard after a short delay to ensure tokens are processed
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true });
+      }, 100);
+    };
+    
+    // Execute immediately
+    cleanAndRedirect();
+    
+    // Also set up a backup redirect in case the first one fails
+    const redirectTimeout = setTimeout(() => {
+      if (window.location.pathname.includes('/auth/')) {
+        console.log('Backup redirect triggered');
+        window.history.replaceState(null, document.title, '/dashboard');
+        navigate('/dashboard', { replace: true });
+      }
+    }, 1500);
+    
+    return () => clearTimeout(redirectTimeout);
   }, [navigate, location]);
 
   return (

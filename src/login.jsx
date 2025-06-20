@@ -20,9 +20,30 @@ const Login = () => {
 
   // Helper function to clean URL of any tokens
   const cleanUrlOfTokens = () => {
-    if (window.location.hash || window.location.search) {
+    // Always clean URL regardless of path to ensure no tokens are ever exposed
+    const currentUrl = window.location.toString();
+    
+    // Check for any sensitive tokens in the URL
+    const hasSensitiveData = 
+      currentUrl.includes('access_token') || 
+      currentUrl.includes('refresh_token') ||
+      currentUrl.includes('id_token') ||
+      currentUrl.includes('token=') ||
+      currentUrl.includes('authorization=') ||
+      currentUrl.includes('auth=');
+    
+    // Handle auth callback paths specially
+    if (window.location.pathname.includes('/auth/')) {
+      // For auth callbacks, always redirect to dashboard without exposing tokens
+      window.history.replaceState(null, document.title, '/dashboard');
+      console.log('Auth callback URL cleaned and redirected to dashboard');
+      return;
+    }
+    
+    // For any other page with tokens, just remove the query/hash part
+    if (hasSensitiveData || window.location.hash || window.location.search) {
       window.history.replaceState(null, document.title, window.location.pathname);
-      console.log('URL cleaned of any parameters during login');
+      console.log('URL cleaned of sensitive data');
     }
   };
 

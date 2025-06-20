@@ -20,35 +20,30 @@ export const AuthProvider = ({ children }) => {
   
   // Enhanced function to clean URL of tokens for security
   const cleanUrlOfTokens = () => {
-    // Check if we have hash or query strings with sensitive data
-    const hasTokenInHash = window.location.hash && (
-      window.location.hash.includes('access_token') || 
-      window.location.hash.includes('refresh_token') ||
-      window.location.hash.includes('id_token')
-    );
+    // Always clean URL regardless of path to ensure no tokens are ever exposed
+    const currentUrl = window.location.toString();
     
-    const hasTokenInSearch = window.location.search && (
-      window.location.search.includes('access_token') ||
-      window.location.search.includes('refresh_token') ||
-      window.location.search.includes('id_token')
-    );
+    // Check for any sensitive tokens in the URL
+    const hasSensitiveData = 
+      currentUrl.includes('access_token') || 
+      currentUrl.includes('refresh_token') ||
+      currentUrl.includes('id_token') ||
+      currentUrl.includes('token=') ||
+      currentUrl.includes('authorization=') ||
+      currentUrl.includes('auth=');
     
-    if (hasTokenInHash || hasTokenInSearch) {
-      // For auth callback URLs, replace with dashboard directly
-      if (window.location.pathname.includes('/auth/callback')) {
-        window.history.replaceState(null, document.title, '/dashboard');
-        console.log('Auth callback URL replaced with dashboard');
-      } else {
-        // For other URLs, just clean the params/hash
-        window.history.replaceState(null, document.title, window.location.pathname);
-        console.log('URL cleaned of sensitive tokens');
-      }
-      
-      // Additional check for any remaining tokens
-      if (window.location.toString().includes('token')) {
-        console.warn('Token still detected in URL after cleaning attempt');
-        window.history.replaceState(null, document.title, '/dashboard');
-      }
+    // Handle auth callback paths specially
+    if (window.location.pathname.includes('/auth/')) {
+      // For auth callbacks, always redirect to dashboard without exposing tokens
+      window.history.replaceState(null, document.title, '/dashboard');
+      console.log('Auth callback URL cleaned and redirected to dashboard');
+      return;
+    }
+    
+    // For any other page with tokens, just remove the query/hash part
+    if (hasSensitiveData || window.location.hash || window.location.search) {
+      window.history.replaceState(null, document.title, window.location.pathname);
+      console.log('URL cleaned of sensitive data');
     }
   };
   
@@ -84,6 +79,9 @@ export const AuthProvider = ({ children }) => {
           setSession(data.session);
           setUser(safeUserData);
           console.log('User authenticated:', safeUserData.email);
+          
+          // Clean URL again after session is established
+          cleanUrlOfTokens();
         } else {
           console.log('No active session found');
           setUser(null);
@@ -103,7 +101,7 @@ export const AuthProvider = ({ children }) => {
       async (event, newSession) => {
         console.log('Auth state changed:', event);
         
-        // Clean URL when auth state changes
+        // Clean URL immediately when auth state changes
         cleanUrlOfTokens();
         
         if (newSession?.user) {
@@ -132,21 +130,31 @@ export const AuthProvider = ({ children }) => {
         // Handle specific auth events
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           console.log('User signed in or token refreshed:', newSession?.user?.email);
-          // Extra security: clean URL again after sign-in
+          // Extra security: clean URL again after sign-in with a delay to catch any late changes
           setTimeout(cleanUrlOfTokens, 100);
+          setTimeout(cleanUrlOfTokens, 500);
+          setTimeout(cleanUrlOfTokens, 1000);
         } else if (event === 'SIGNED_OUT') {
           console.log('User signed out');
         }
       }
     );
 
-    // Set up additional URL monitoring for security
+    // Set up more aggressive URL monitoring for security
     const intervalId = setInterval(() => {
-      if (window.location.toString().includes('token')) {
-        console.warn('Token detected in URL during monitoring');
+      const currentUrl = window.location.toString();
+      if (
+        currentUrl.includes('token') || 
+        currentUrl.includes('auth') || 
+        currentUrl.includes('access_') || 
+        currentUrl.includes('refresh_') ||
+        window.location.hash || 
+        window.location.search
+      ) {
+        console.warn('Potentially sensitive data detected in URL during monitoring');
         cleanUrlOfTokens();
       }
-    }, 1000);
+    }, 500); // Check more frequently
 
     return () => {
       console.log('AuthProvider unmounting, cleaning up listener');
@@ -159,6 +167,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     console.log('Auth state updated - User:', user ? 'Authenticated' : 'Not authenticated');
     console.log('Auth state updated - Session:', session ? 'Active' : 'None');
+    
+    // Clean URL again when auth state changes
+    cleanUrlOfTokens();
   }, [user, session]);
 
   const signOut = async () => {
@@ -171,6 +182,7 @@ export const AuthProvider = ({ children }) => {
       // Cleanup local storage
       localStorage.removeItem('userEmail');
       localStorage.removeItem('userPhone');
+      localStorage.removeItem('currentUser');
       console.log('Sign out complete');
     } catch (error) {
       console.error('Error signing out:', error);

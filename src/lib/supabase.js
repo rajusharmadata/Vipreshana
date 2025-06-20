@@ -8,19 +8,58 @@ console.log('Initializing Supabase client with:')
 console.log('Supabase URL:', supabaseUrl)
 console.log('Supabase Key (first 10 chars):', supabaseAnonKey.substring(0, 10) + '...')
 
+// Clean URL of any tokens for security
+const cleanUrlOfTokens = () => {
+  // Always clean URL regardless of path to ensure no tokens are ever exposed
+  const currentUrl = window.location.toString();
+  
+  // Check for any sensitive tokens in the URL
+  const hasSensitiveData = 
+    currentUrl.includes('access_token') || 
+    currentUrl.includes('refresh_token') ||
+    currentUrl.includes('id_token') ||
+    currentUrl.includes('token=') ||
+    currentUrl.includes('authorization=') ||
+    currentUrl.includes('auth=');
+  
+  // Handle auth callback paths specially
+  if (window.location.pathname.includes('/auth/')) {
+    // For auth callbacks, always redirect to dashboard without exposing tokens
+    window.history.replaceState(null, document.title, '/dashboard');
+    console.log('Auth callback URL cleaned and redirected to dashboard');
+    return;
+  }
+  
+  // For any other page with tokens, just remove the query/hash part
+  if (hasSensitiveData || window.location.hash || window.location.search) {
+    window.history.replaceState(null, document.title, window.location.pathname);
+    console.log('URL cleaned of sensitive data');
+  }
+};
+
+// Clean URL before initializing Supabase
+cleanUrlOfTokens();
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     redirectTo: window.location.origin + '/auth/callback',
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    storage: window.localStorage
+    storage: window.localStorage,
+    // Use secure cookie settings when possible
+    cookieOptions: {
+      secure: window.location.protocol === 'https:',
+      sameSite: 'Lax'
+    }
   },
 })
 
 // Test the connection and log the result
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Supabase auth event:', event)
+  // Clean URL when auth state changes
+  cleanUrlOfTokens();
 })
 
 // Backend API base URL 
@@ -47,9 +86,7 @@ export const signInWithGoogle = async () => {
     console.log('Initiating Google sign in')
     
     // Clean any existing tokens from URL before starting auth flow
-    if (window.location.hash || window.location.search) {
-      window.history.replaceState(null, document.title, window.location.pathname);
-    }
+    cleanUrlOfTokens();
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -61,6 +98,9 @@ export const signInWithGoogle = async () => {
         },
         skipBrowserRedirect: false, // Ensure we use the proper redirect flow
         flowType: 'pkce', // Use PKCE flow for better security
+        scopes: 'email profile', // Limit scope to just what we need
+        // Use state parameter for CSRF protection
+        state: `security-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
       }
     })
 
@@ -70,6 +110,11 @@ export const signInWithGoogle = async () => {
     }
 
     console.log('Google sign in initiated successfully')
+    
+    // Set up a security check to clean URL after redirect
+    setTimeout(cleanUrlOfTokens, 100);
+    setTimeout(cleanUrlOfTokens, 1000);
+    
     return { success: true, data }
   } catch (error) {
     console.error('Google sign in exception:', error)
