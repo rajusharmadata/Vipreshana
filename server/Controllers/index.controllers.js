@@ -7,11 +7,14 @@ const sendSMSController = require("./BookingControllers/sendBookingSMSController
 const updateBookingController = require("./BookingControllers/updateBookingController");
 const userLoginController = require("./UserControllers/userLoginController");
 const userRegisterController = require("./UserControllers/userRegisterController");
-
+const userProfileController = require("./UserControllers/userProfileController");
 const Controllers = {
     DeleteBookingController: deleteBooking,
     UserRegisterController: userRegisterController,
     UserLoginController: userLoginController,
+    GetUserProfileController: userProfileController.getProfileController,
+    UpdateUserProfileController: userProfileController.updateProfileController,
+    UpdateUserPasswordController: userProfileController.changePasswordController,
     GetBookingByPhoneController: getBookingByPhoneController,
     BookingController: createBookingController,
     GetAllBookingController: getAllBookingController,

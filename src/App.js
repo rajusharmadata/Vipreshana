@@ -20,7 +20,8 @@ import AdminDashboard from './AdminDashboard';
 import User from './components/User';
 import Driver from './components/Driver';
 import Layout from './Layout';
-import NotFound from './NotFound';
+import Profile from './profile'; 
+import PublicRoute from './routes/PublicRoute';import NotFound from './NotFound';
 
 function AppRoutes() {
   const location = useLocation();
@@ -29,21 +30,22 @@ function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<PublicRoute><Dashboard/></PublicRoute>} />
         <Route path="/about" element={<About />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/login-dashboard" element={<LoginDashboard />} />
         <Route path="/logindashboard" element={<LoginDashboard />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/register" element={<Registration />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<PublicRoute><Registration /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/location" element={<Location />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/user" element={<User />} />
-        <Route path="/driver" element={<Driver />} />
+          <Route path="/driver" element={<Driver />} />
+          <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<NotFound />} />
         </Route>
         
