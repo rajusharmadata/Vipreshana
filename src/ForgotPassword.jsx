@@ -4,9 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar'; // <-- Add this import
-
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 import PageMeta from './components/Pagemeta';
+const API_BASE_URL =  'https://vipreshana-3.onrender.com';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -19,7 +18,7 @@ const ForgotPassword = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`${API_BASE_URL}/forgot-password`, { email });
+            const response = await axios.post(`${API_BASE_URL}/api/forgot-password`, { email });
             toast.success(response.data.message, {
                 position: "top-center",
                 autoClose: 3000,
