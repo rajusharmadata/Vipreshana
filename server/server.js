@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5001', 'http://localhost:5173', 'https://vipreshana-2.vercel.app', 'https://vipreshana-3.onrender.com'],
+origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
@@ -77,7 +77,7 @@ app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
 //Forgot password
-app.post('/forgot-password', Controllers.ForgotPasswordController);
+app.post('api/forgot-password', Controllers.ForgotPasswordController);
 
 // Booking Endpoints
 app.post('/api/bookings', Controllers.BookingController);
