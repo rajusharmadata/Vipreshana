@@ -76,6 +76,9 @@ app.get('/api/user/profile', Controllers.GetUserProfileController);
 app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
+//Forgot password
+app.post('/forgot-password', Controllers.ForgotPasswordController);
+
 // Booking Endpoints
 app.post('/api/bookings', Controllers.BookingController);
 
