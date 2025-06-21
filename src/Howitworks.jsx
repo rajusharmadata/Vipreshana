@@ -68,14 +68,14 @@ const HowItWorks = () => {
           </motion.p>
 
           {/* Timeline Section */}
-          <div className="relative max-w-4xl mx-auto">
+          <div className="relative max-w-4xl mx-auto px-2 sm:px-4">
             {/* Timeline Line */}
-            <div className={`absolute left-1/2 transform -translate-x-1/2 h-full w-1 ${
+            <div className={`absolute left-1/2 transform -translate-x-1/2 h-full w-1 z-0 ${
               isDark ? 'bg-blue-500' : 'bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500'
             }`}></div>
 
             {/* Timeline Steps */}
-            <div className="space-y-12">
+            <div className="space-y-16">
               {steps.map((step, index) => (
                 <motion.div
                   key={index}
@@ -83,33 +83,33 @@ const HowItWorks = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                   viewport={{ once: true }}
-                  className={`relative flex items-center ${
-                    index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                  }`}
+                  className={`relative z-10 flex items-center \
+                    flex-col sm:flex-row ${index % 2 === 0 ? 'sm:flex-row' : 'sm:flex-row-reverse'} \
+                    text-center sm:text-left`}
                 >
                   {/* Timeline Dot */}
-                  <div className={`absolute left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xl ${
+                  <div className={`absolute left-1/2 top-0 transform -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center text-2xl shadow-lg ${
                     isDark ? 'bg-blue-500' : 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500'
                   }`}>
                     {step.icon}
                   </div>
 
                   {/* Content Card */}
-                  <div className={`w-5/12 ${
-                    index % 2 === 0 ? 'mr-auto pr-12' : 'ml-auto pl-12'
+                  <div className={`w-11/12 sm:w-5/12 mt-12 sm:mt-0 ${
+                    index % 2 === 0 ? 'sm:mr-auto sm:pr-12' : 'sm:ml-auto sm:pl-12'
                   }`}>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
-                      className={`p-6 rounded-xl shadow-lg ${
+                      className={`p-4 sm:p-6 rounded-xl shadow-lg ${
                         isDark ? 'bg-gray-800' : 'bg-white'
                       }`}
                     >
-                      <h3 className={`text-xl font-semibold mb-2 ${
+                      <h3 className={`text-lg sm:text-xl font-semibold mb-2 ${
                         isDark ? 'text-blue-400' : 'text-gray-900'
                       }`}>
                         {step.title}
                       </h3>
-                      <p className={`${
+                      <p className={`text-sm sm:text-base ${
                         isDark ? 'text-gray-300' : 'text-gray-600'
                       }`}>
                         {step.description}
