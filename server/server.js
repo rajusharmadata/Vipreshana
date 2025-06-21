@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-origin: '*',
+  origin: '*',
   credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
@@ -24,11 +24,11 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
-app.use(cors());
+// app.use(cors());
 // 404 Handler 
-app.use((req, res, next) => {
-  res.status(404).json({ error: 'Not Found', message: 'The requested resource does not exist.' });
-});
+// app.use((req, res, next) => {
+//   res.status(404).json({ error: 'Not Found', message: 'The requested resource does not exist.' });
+// });
 // MongoDB Connection
 connectMongoDB(Configs.DB_URI);
 
@@ -77,6 +77,7 @@ app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
 //Forgot password
+
 app.post('api/forgot-password', Controllers.ForgotPasswordController);
 
 // Booking Endpoints

@@ -1,22 +1,27 @@
 const sendMail = require("../../Utils/sendMail");
 
-// Sanitization function
 const sanitize = (str) => {
     return str?.trim().replace(/[<>"'\/]/g, '');
 };
 
 const forgotPasswordController = async (req, res) => {
     const { email } = req.body;
-    // console.log("Received email:", email);
-    if (!email) {
+    const sanitizedEmail = sanitize(email);
+
+    if (!sanitizedEmail) {
         return res.status(400).json({ message: 'Email is required' });
     }
 
     const mailData = {
-        to: email,
-        subject: 'Reset Your Password',
-        html: `<p>Click the link below to reset your password:</p>
-               <a href="https://vipreshana-2.vercel.app/reset-password">Reset Password</a>`
+        to: sanitizedEmail,
+        subject: 'Reset Your Password - Vipreshana',
+        html: `
+            <p>Hello,</p>
+            <p>You requested to reset your password. Click the link below:</p>
+            <a href="https://vipreshana-2.vercel.app/reset-password" style="color: blue;">Reset Password</a>
+            <p>If you didn't request this, just ignore this email.</p>
+            <p>– Vipreshana Team</p>
+        `
     };
 
     sendMail(mailData, (error, info) => {
@@ -28,6 +33,5 @@ const forgotPasswordController = async (req, res) => {
         }
     });
 };
-
 
 module.exports = forgotPasswordController;
