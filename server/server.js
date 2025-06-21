@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5001', 'http://localhost:5173', 'https://vipreshana-2.vercel.app', 'https://vipreshana-3.onrender.com'],
-  credentials: true,
+  origin: '*',
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
-app.use(cors());
+// app.use(cors());
 // 404 Handler 
 // app.use((req, res, next) => {
 //   res.status(404).json({ error: 'Not Found', message: 'The requested resource does not exist.' });
