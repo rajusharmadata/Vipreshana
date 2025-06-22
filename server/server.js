@@ -6,6 +6,7 @@ require('dotenv').config();
 const Configs = require('./configs/Configs');
 const connectMongoDB = require('./Databases/ConnectDB');
 const Controllers = require('./Controllers/index.controllers');
+const { otpRateLimiter, otpVerificationRateLimiter } = require('./middleware/rateLimiter');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -76,8 +77,14 @@ app.get('/api/user/profile', Controllers.GetUserProfileController);
 app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
-//Forgot password
+// OTP Endpoints
+app.post('/api/send-otp', otpRateLimiter, Controllers.SendOTPController);
+app.post('/api/verify-otp', otpVerificationRateLimiter, Controllers.VerifyOTPController);
 
+// Registration Endpoint
+app.post('/api/register', Controllers.UserRegisterController);
+
+//Forgot password
 app.post('api/forgot-password', Controllers.ForgotPasswordController);
 
 // Booking Endpoints

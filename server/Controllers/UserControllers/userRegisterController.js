@@ -12,25 +12,48 @@ const userRegisterController = async (req, res) => {
     let { name, email, password, phone, role } = req.body;
 
     try {
-
         name = sanitize(name);
         email = sanitize(email);
         phone = phone?.trim();
         role = sanitize(role);
 
+        // Check if user already exists
         const existingUser = await Models.UserSchema.findOne({ $or: [{ email }, { phone }] });
         if (existingUser) {
             return res.status(400).json({ error: "Email or Phone already registered" });
         }
 
+        // Verify OTP before registration
+        const verifiedOTP = await Models.OTPSchema.findOne({
+            phone,
+            isVerified: true,
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (!verifiedOTP) {
+            return res.status(400).json({ 
+                error: "Phone number not verified. Please verify your phone number with OTP first." 
+            });
+        }
+
+        // Hash password and create user
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newRegistration = new Models.UserSchema({ name, email, password: hashedPassword, phone, role });
+        const newRegistration = new Models.UserSchema({ 
+            name, 
+            email, 
+            password: hashedPassword, 
+            phone, 
+            role 
+        });
         await newRegistration.save();
 
-        //Create a mail content...
+        // Delete the verified OTP after successful registration
+        await Models.OTPSchema.findByIdAndDelete(verifiedOTP._id);
+
+        // Create a mail content...
         const mailData = Templates.SignupMailTemplate({ email, name, subject: "Welcome to Vipreshana" });
 
-        //Send the welcome mail...
+        // Send the welcome mail...
         await sendMail(mailData, (error, info) => {
             if (error) {
                 console.log("Mail sending error...");
