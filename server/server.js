@@ -85,7 +85,7 @@ app.post('/api/verify-otp', otpVerificationRateLimiter, Controllers.VerifyOTPCon
 app.post('/api/register', Controllers.UserRegisterController);
 
 //Forgot password
-app.post('api/forgot-password', Controllers.ForgotPasswordController);
+app.post('/api/forgot-password', Controllers.ForgotPasswordController);
 
 // Booking Endpoints
 app.post('/api/bookings', Controllers.BookingController);
