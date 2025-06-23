@@ -7,47 +7,51 @@ const Configs = require('./configs/Configs');
 const connectMongoDB = require('./Databases/ConnectDB');
 const Controllers = require('./Controllers/index.controllers');
 const { otpRateLimiter, otpVerificationRateLimiter } = require('./middleware/rateLimiter');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// ✅ Allowed frontend origins
+const allowedOrigins = ['https://vipreshana-2.vercel.app'];
+
+// ✅ Secure CORS middleware setup
 app.use(cors({
-  origin: '*',
-  credentials: false,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging middleware
+// Log all incoming requests
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
-// app.use(cors());
-// 404 Handler 
-// app.use((req, res, next) => {
-//   res.status(404).json({ error: 'Not Found', message: 'The requested resource does not exist.' });
-// });
-// MongoDB Connection
-connectMongoDB(Configs.DB_URI);
 
 // MongoDB connection
+connectMongoDB(Configs.DB_URI);
+
 if (process.env.MONGODB_URI) {
   mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✨ MongoDB connected successfully ✨'))
-    .catch(err => console.error(' MongoDB connection failed:', err));
+    .catch(err => console.error('❌ MongoDB connection failed:', err));
 }
 
-// Import routes
+// Auth routes
 const authRoutes = require('./routes/authRoutes');
-
-// Mount routes
 app.use('/api/auth', authRoutes);
 console.log('Auth routes are at /api/auth');
 
-// Basic routes
+// Default route
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Vipreshana Server is running!',
@@ -61,7 +65,7 @@ app.get('/', (req, res) => {
 // Health check
 app.get('/health', (req, res) => {
   res.json({ 
-    status: 'ok', 
+    status: 'ok',
     timestamp: new Date().toISOString(),
     services: {
       supabase: process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SUPABASE_ANON_KEY ? 'configured' : 'not_configured',
@@ -72,33 +76,30 @@ app.get('/health', (req, res) => {
     }
   });
 });
-// User Profile Endpoints
+
+// User Profile Routes
 app.get('/api/user/profile', Controllers.GetUserProfileController);
 app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
-// OTP Endpoints
+// OTP Routes
 app.post('/api/send-otp', otpRateLimiter, Controllers.SendOTPController);
 app.post('/api/verify-otp', otpVerificationRateLimiter, Controllers.VerifyOTPController);
 
-// Registration Endpoint
+// Auth/Registration Routes
 app.post('/api/register', Controllers.UserRegisterController);
-
-//Forgot password
 app.post('/api/forgot-password', Controllers.ForgotPasswordController);
 
-// Booking Endpoints
+// Booking Routes
 app.post('/api/bookings', Controllers.BookingController);
-
-// Get All Bookings
 app.get('/api/details', Controllers.GetAllBookingController);
 
-// Add a test route to verify the server is running
+// Server Test
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running', status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Add a fallback route handler for 404 errors
+// 404 Fallback Route
 app.use((req, res) => {
   console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({
@@ -113,13 +114,13 @@ app.use((req, res) => {
   });
 });
 
-// Error handling middleware
+// Error Handler
 app.use((err, req, res, next) => {
-  console.error('Server error:', err.stack);
+  console.error('❌ Server error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!', message: err.message });
 });
 
-// Start the server
+// Server Start
 app.listen(PORT, () => {
   figlet('Vipreshana Server', (err, data) => {
     if (err) {
