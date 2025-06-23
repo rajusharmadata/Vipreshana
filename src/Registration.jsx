@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
 import { useTheme } from './context/ThemeContext';
+import OTPVerification from './components/OTPVerification';
 
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
@@ -25,6 +26,7 @@ const RegistrationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
   const navigate = useNavigate();
 
   const { theme } = useTheme();
@@ -50,9 +52,14 @@ const RegistrationForm = () => {
       return;
     }
 
+    // Show OTP verification instead of directly registering
+    setShowOTPVerification(true);
+  };
+
+  const handleOTPVerificationSuccess = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_BASE_URL}/register`, {
+      const response = await axios.post(`${API_BASE_URL}/api/register`, {
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -65,7 +72,13 @@ const RegistrationForm = () => {
     } catch (err) {
       setIsLoading(false);
       setError('Registration failed: ' + (err.response?.data?.error || 'Unknown error'));
+      setShowOTPVerification(false); // Go back to form if registration fails
     }
+  };
+
+  const handleBackToForm = () => {
+    setShowOTPVerification(false);
+    setError('');
   };
 
   const getRoleIcon = (role) => {
@@ -85,6 +98,32 @@ const RegistrationForm = () => {
       default: return isDark ? 'bg-gray-900 text-gray-100 border-gray-700' : 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  // Show OTP verification component if needed
+  if (showOTPVerification) {
+    return (
+      <>
+        <PageMeta />
+        <Navbar />
+        <div className={`min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-300 ${
+          isDark ? 'bg-black text-white' : 'bg-gradient-to-br from-indigo-50 via-white to-cyan-50 text-gray-900'
+        }`}>
+          <ToastContainer />
+          <div className="w-full max-w-5xl mx-auto relative z-10">
+            <div className={`rounded-2xl shadow-xl border p-6 sm:p-8 lg:p-12 transition-all duration-300 ${
+              isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white/80 border-white/20 text-gray-900'
+            }`}>
+              <OTPVerification
+                phone={formData.phone}
+                onVerificationSuccess={handleOTPVerificationSuccess}
+                onBack={handleBackToForm}
+              />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -242,7 +281,7 @@ const RegistrationForm = () => {
                 ) : (
                   <div className="flex items-center justify-center gap-2">
                     <Sparkles className="w-5 h-5" />
-                    Create Account
+                    Continue to Verification
                   </div>
                 )}
               </button>

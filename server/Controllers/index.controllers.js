@@ -9,6 +9,8 @@ const userLoginController = require("./UserControllers/userLoginController");
 const userRegisterController = require("./UserControllers/userRegisterController");
 const forgotPasswordController = require('./UserControllers/userForgotPasswordController'); // Forgot Password
 const userProfileController = require("./UserControllers/userProfileController");
+const sendOTPController = require("./OTPControllers/sendOTPController");
+const verifyOTPController = require("./OTPControllers/verifyOTPController");
 
 const Controllers = {
     DeleteBookingController: deleteBooking,
@@ -23,7 +25,9 @@ const Controllers = {
     UpdateBookingController: updateBookingController,
     AcceptBookingController: acceptBookingController,
     SendBookingSMSController: sendSMSController,
-    ForgotPasswordController: forgotPasswordController
+    ForgotPasswordController: forgotPasswordController,
+    SendOTPController: sendOTPController,
+    VerifyOTPController: verifyOTPController
 }
 
 module.exports = Controllers;
