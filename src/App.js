@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeContext';
 import Loader from './components/Loader';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Footer from './components/Footer';
 import Dashboard from './Dashboard';
 import About from './About';
@@ -23,7 +23,12 @@ import User from './components/User';
 import Driver from './components/Driver';
 import Layout from './Layout';
 import Profile from './profile'; 
-import PublicRoute from './routes/PublicRoute';import NotFound from './NotFound';
+// import PublicRoute from './routes/PublicRoute';
+// Using the custom-made ProtectedRoute instead of PublicRoute
+import ProtectedRoute from './routes/ProtectedRoute';
+import NotFound from './NotFound';
+import { supabase } from './lib/supabase';
+import AuthCallbackComponent from './components/AuthCallback';
 
 // Auth security middleware to protect user tokens
 const AuthSecurityHandler = ({ children }) => {
@@ -44,9 +49,9 @@ const AuthSecurityHandler = ({ children }) => {
       
       // Handle auth callback paths specially
       if (window.location.pathname.includes('/auth/')) {
-        // For auth callbacks, always redirect to dashboard without exposing tokens
-        window.history.replaceState(null, document.title, '/dashboard');
-        console.log('Auth callback URL cleaned and redirected to dashboard');
+        // For auth callbacks, always redirect to logindashboard without exposing tokens
+        window.history.replaceState(null, document.title, '/logindashboard');
+        console.log('Auth callback URL cleaned and redirected to logindashboard');
         return;
       }
       
@@ -96,50 +101,36 @@ const AuthSecurityHandler = ({ children }) => {
   return <>{children}</>;
 };
 
-// Auth callback handler component for Supabase OAuth redirects
-const AuthCallback = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+// Legacy auth callback component - now replaced by AuthCallbackComponent
+// This is kept for reference and backward compatibility
+// If you need to modify auth callback behavior, please update the AuthCallbackComponent instead
 
+// Modified PublicRoute to redirect authenticated users to dashboard
+const ProtectedPublicRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  const [localUser, setLocalUser] = useState(null);
+  
+  // Check for user in localStorage
   useEffect(() => {
-    // Immediately clean URL to prevent token exposure
-    const cleanAndRedirect = () => {
-      console.log('Auth callback received - processing OAuth redirect');
-      
-      // Immediately replace the current URL to remove any tokens
-      window.history.replaceState(null, document.title, '/dashboard');
-      
-      // Force redirect to dashboard after a short delay to ensure tokens are processed
-      setTimeout(() => {
-        navigate('/dashboard', { replace: true });
-      }, 100);
-    };
-    
-    // Execute immediately
-    cleanAndRedirect();
-    
-    // Also set up a backup redirect in case the first one fails
-    const redirectTimeout = setTimeout(() => {
-      if (window.location.pathname.includes('/auth/')) {
-        console.log('Backup redirect triggered');
-        window.history.replaceState(null, document.title, '/dashboard');
-        navigate('/dashboard', { replace: true });
+    try {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setLocalUser(JSON.parse(userData));
       }
-    }, 1500);
-    
-    return () => clearTimeout(redirectTimeout);
-  }, [navigate, location]);
-
-  return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="text-center p-8 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4">Completing Login...</h2>
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="mt-4 text-gray-600">Please wait while we complete your authentication.</p>
-      </div>
-    </div>
-  );
+    } catch (error) {
+      console.error('Error reading user data from localStorage:', error);
+    }
+  }, []);
+  
+  // If user is authenticated in context or localStorage, redirect to logindashboard
+  if (isAuthenticated || localUser) {
+    return <Navigate to="/logindashboard" replace />;
+  }
+  
+  // Otherwise, show the requested public route
+  return children;
 };
+
 function AppRoutes() {
   const location = useLocation();
 
@@ -147,26 +138,26 @@ function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route element={<Layout />}>
-        <Route path="/" element={<PublicRoute><Dashboard/></PublicRoute>} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/about" element={<About />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
-        <Route path="/bookings" element={<Bookings />} />
-        <Route path="/dashboard" element={<LoginDashboard />} />
-        <Route path="/login-dashboard" element={<LoginDashboard />} />
-        <Route path="/logindashboard" element={<LoginDashboard />} />
+        <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><LoginDashboard /></ProtectedRoute>} />
+        <Route path="/login-dashboard" element={<ProtectedRoute><LoginDashboard /></ProtectedRoute>} />
+        <Route path="/logindashboard" element={<ProtectedRoute><LoginDashboard /></ProtectedRoute>} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/register" element={<PublicRoute><Registration /></PublicRoute>} />
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/register" element={<ProtectedPublicRoute><Registration /></ProtectedPublicRoute>} />
+        <Route path="/login" element={<ProtectedPublicRoute><Login /></ProtectedPublicRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/location" element={<Location />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/user" element={<User />} />
-        <Route path="/driver" element={<Driver />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/user" element={<ProtectedRoute><User /></ProtectedRoute>} />
+        <Route path="/driver" element={<ProtectedRoute><Driver /></ProtectedRoute>} />
+        <Route path="/auth/callback" element={<AuthCallbackComponent />} />
         {/* Catch-all for auth callbacks with hash fragments */}
-        <Route path="/auth/*" element={<AuthCallback />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/auth/*" element={<AuthCallbackComponent />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTheme } from './context/ThemeContext';
@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { signInWithGoogle } from './lib/supabase';
 import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
+import AuthRequired from './components/AuthRequired';
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const Login = () => {
@@ -15,6 +16,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -34,9 +36,9 @@ const Login = () => {
     
     // Handle auth callback paths specially
     if (window.location.pathname.includes('/auth/')) {
-      // For auth callbacks, always redirect to dashboard without exposing tokens
-      window.history.replaceState(null, document.title, '/dashboard');
-      console.log('Auth callback URL cleaned and redirected to dashboard');
+      // For auth callbacks, always redirect to logindashboard without exposing tokens
+      window.history.replaceState(null, document.title, '/logindashboard');
+      console.log('Auth callback URL cleaned and redirected to logindashboard');
       return;
     }
     
@@ -61,7 +63,7 @@ const Login = () => {
     
     try {
       const response = await axios.post(`${API_BASE_URL}/login`, formData);
-      const { user, redirectUrl, message } = response.data;
+      const { user, message } = response.data; // We always redirect to dashboard now
       
       if (user) {
         // Store user in localStorage with proper security measures
@@ -74,8 +76,28 @@ const Login = () => {
           role: user.role
         };
         
+        // Clear any existing data first
+        localStorage.removeItem("user");
+        
+        // Store the new user data
         localStorage.setItem("user", JSON.stringify(safeUserData));
-        console.log('User data stored securely in localStorage');
+        console.log('User data stored securely in localStorage:', safeUserData);
+        
+        // Force a state update to trigger auth context
+        window.dispatchEvent(new Event('storage'));
+        
+        // Dispatch multiple custom auth events for components to update
+        const authEvent = new CustomEvent('authChange', { detail: { isAuthenticated: true, user: safeUserData } });
+        window.dispatchEvent(authEvent);
+        
+        // Additional events to ensure all components update
+        window.dispatchEvent(new Event('login'));
+        window.dispatchEvent(new Event('storage'));
+        
+        // Force global state refresh
+        setTimeout(() => {
+          window.dispatchEvent(new Event('storage'));
+        }, 500);
       } else {
         console.warn("Login response missing user object", response.data);
       }
@@ -83,7 +105,7 @@ const Login = () => {
       toast.success(`🎉 ${message}`, {
         toastId: 'login-success',
         position: 'top-center',
-        autoClose: 3000,
+        autoClose: 1500,
         style: {
           backgroundColor: '#28a745',
           color: '#fff',
@@ -93,17 +115,20 @@ const Login = () => {
           textAlign: 'center',
         },
       });
-
-      // Use a default redirect if none provided
-      const finalRedirectUrl = redirectUrl || '/dashboard';
       
+      // Check if there's a redirect path from a protected route
       setTimeout(() => {
         setIsLoading(false);
         // Clean URL one more time before navigation
         cleanUrlOfTokens();
-        // Use replace: true to prevent going back to login page
-        navigate(finalRedirectUrl, { replace: true });
-      }, 2000);
+        
+        // Check if we were redirected from a protected route
+        const redirectPath = location.state?.from || '/logindashboard';
+        console.log('Redirecting to:', redirectPath);
+        
+        // Navigate to the redirect path or logindashboard
+        navigate(redirectPath, { replace: true });
+      }, 1500);
     } catch (error) {
       setIsLoading(false);
       if (!toast.isActive('login-error')) {
@@ -130,12 +155,7 @@ const Login = () => {
       // Clean URL before starting OAuth process
       cleanUrlOfTokens();
       
-      // eslint-disable-next-line no-unused-vars
-      const { success, data, error } = await signInWithGoogle();
-      
-      if (!success) throw new Error(error);
-      
-      toast.success('Signing in with Google...', {
+      toast.success('Redirecting to Google sign-in...', {
         position: 'top-center',
         autoClose: 1500,
         style: {
@@ -148,7 +168,17 @@ const Login = () => {
         },
       });
       
-      // OAuth will handle the redirect to dashboard now
+      // Store the redirect path in sessionStorage to use after Google auth
+      const redirectPath = location.state?.from || '/logindashboard';
+      sessionStorage.setItem('auth_redirect', redirectPath);
+      
+      // eslint-disable-next-line no-unused-vars
+      const { success, data, error } = await signInWithGoogle();
+      
+      if (!success) throw new Error(error);
+      
+      // Note: We won't reach this point as Google auth will redirect the browser
+      // The AuthCallback component will handle the post-auth redirect
     } catch (error) {
       console.error('Google sign-in error:', error);
       toast.error(`Google sign-in failed: ${error.message || 'Please try again'}`, {
@@ -168,10 +198,14 @@ const Login = () => {
 
   const isDisabled = !formData.phone || !formData.password;
 
+  // Check if we were redirected from a protected route
+  const redirectFrom = location.state?.from;
+
   return (
     <>
     <PageMeta /> 
       <Navbar />
+      {redirectFrom && <AuthRequired redirectPath={redirectFrom} />}
       <div
         className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
           isDark ? 'brightness-75' : 'brightness-100'

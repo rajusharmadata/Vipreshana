@@ -56,6 +56,21 @@ export const AuthProvider = ({ children }) => {
     const getInitialSession = async () => {
       try {
         console.log('Getting initial session...');
+        
+        // First check localStorage for local authentication
+        const localUserData = localStorage.getItem('user');
+        if (localUserData) {
+          try {
+            const userData = JSON.parse(localUserData);
+            console.log('Found user in localStorage:', userData.email || userData.phone);
+            setUser(userData);
+            console.log('User authenticated from localStorage');
+          } catch (parseError) {
+            console.error('Error parsing user data from localStorage:', parseError);
+          }
+        }
+        
+        // Also check Supabase session (for OAuth users)
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -64,11 +79,15 @@ export const AuthProvider = ({ children }) => {
         }
         
         if (data?.session) {
-          console.log('Found existing session:', data.session.user.email);
+          console.log('Found existing Supabase session:', data.session.user.email);
           // Only store minimal user information in state
           const safeUserData = {
             id: data.session.user.id,
             email: data.session.user.email,
+            name: data.session.user.user_metadata?.full_name || 
+                  data.session.user.user_metadata?.name || 
+                  data.session.user.email,
+            role: 'user', // Default role
             user_metadata: data.session.user.user_metadata ? {
               name: data.session.user.user_metadata.name,
               avatar_url: data.session.user.user_metadata.avatar_url,
@@ -76,14 +95,22 @@ export const AuthProvider = ({ children }) => {
             } : {}
           };
           
+          // Store in both context state and localStorage for consistent auth
           setSession(data.session);
           setUser(safeUserData);
-          console.log('User authenticated:', safeUserData.email);
+          
+          // Also update localStorage if not already there
+          if (!localUserData) {
+            localStorage.setItem('user', JSON.stringify(safeUserData));
+            console.log('Stored Google auth user in localStorage');
+          }
+          
+          console.log('User authenticated from Supabase:', safeUserData.email);
           
           // Clean URL again after session is established
           cleanUrlOfTokens();
-        } else {
-          console.log('No active session found');
+        } else if (!localUserData) {
+          console.log('No active session found (local or Supabase)');
           setUser(null);
         }
       } catch (err) {
@@ -109,6 +136,10 @@ export const AuthProvider = ({ children }) => {
           const safeUserData = {
             id: newSession.user.id,
             email: newSession.user.email,
+            name: newSession.user.user_metadata?.full_name || 
+                  newSession.user.user_metadata?.name || 
+                  newSession.user.email,
+            role: 'user', // Default role
             user_metadata: newSession.user.user_metadata ? {
               name: newSession.user.user_metadata.name,
               avatar_url: newSession.user.user_metadata.avatar_url,
@@ -116,13 +147,34 @@ export const AuthProvider = ({ children }) => {
             } : {}
           };
           
+          // Update both session state and localStorage
           setSession(newSession);
           setUser(safeUserData);
+          
+          // Store in localStorage for consistent auth across the app
+          localStorage.setItem('user', JSON.stringify(safeUserData));
+          
+          // Dispatch events to notify components
+          window.dispatchEvent(new Event('storage'));
+          window.dispatchEvent(new Event('login'));
+          window.dispatchEvent(new CustomEvent('authChange', { 
+            detail: { isAuthenticated: true, user: safeUserData } 
+          }));
+          
           console.log('User state updated:', safeUserData.email);
         } else {
           console.log('User state cleared - no session');
           setSession(null);
           setUser(null);
+          
+          // Also clear localStorage if session is gone
+          if (localStorage.getItem('user')) {
+            localStorage.removeItem('user');
+            
+            // Notify components
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('logout'));
+          }
         }
         
         setLoading(false);
@@ -155,11 +207,34 @@ export const AuthProvider = ({ children }) => {
         cleanUrlOfTokens();
       }
     }, 500); // Check more frequently
+    
+    // Listen for localStorage changes
+    const handleStorageChange = () => {
+      console.log('Storage changed, checking for user data');
+      const localUserData = localStorage.getItem('user');
+      if (localUserData) {
+        try {
+          const userData = JSON.parse(localUserData);
+          console.log('User data updated in localStorage:', userData);
+          setUser(userData);
+        } catch (e) {
+          console.error('Error parsing user data from storage event:', e);
+        }
+      } else {
+        console.log('No user found in localStorage on storage event');
+        if (!session) {
+          setUser(null);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
-      console.log('AuthProvider unmounting, cleaning up listener');
+      console.log('AuthProvider unmounting, cleaning up listeners');
       authListener?.subscription.unsubscribe();
       clearInterval(intervalId);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -176,13 +251,30 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('Signing out user...');
       setLoading(true);
+      
+      // Sign out from Supabase
       await supabase.auth.signOut();
+      
+      // Clear user state
       setUser(null);
       setSession(null);
-      // Cleanup local storage
+      
+      // Clean up ALL possible localStorage items
+      localStorage.removeItem('user');
       localStorage.removeItem('userEmail');
       localStorage.removeItem('userPhone');
       localStorage.removeItem('currentUser');
+      
+      // Dispatch events to notify components
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new Event('logout'));
+      window.dispatchEvent(new CustomEvent('authChange', { detail: { isAuthenticated: false, user: null } }));
+      
+      // Force global state refresh with delay
+      setTimeout(() => {
+        window.dispatchEvent(new Event('storage'));
+      }, 500);
+      
       console.log('Sign out complete');
     } catch (error) {
       console.error('Error signing out:', error);
@@ -201,12 +293,67 @@ export const AuthProvider = ({ children }) => {
     return !!user;
   };
   
+  // Force refresh authentication
+  const refreshAuth = async () => {
+    try {
+      setLoading(true);
+      console.log('Manually refreshing authentication state...');
+      
+      // Check Supabase session
+      const { data, error } = await supabase.auth.refreshSession();
+      
+      if (error) {
+        console.error('Error refreshing auth:', error);
+        return false;
+      }
+      
+      if (data?.session?.user) {
+        // Update user data
+        const userData = {
+          id: data.session.user.id,
+          email: data.session.user.email,
+          name: data.session.user.user_metadata?.full_name || 
+                data.session.user.user_metadata?.name || 
+                data.session.user.email,
+          role: 'user', // Default role
+          user_metadata: data.session.user.user_metadata ? {
+            name: data.session.user.user_metadata.name,
+            avatar_url: data.session.user.user_metadata.avatar_url,
+            full_name: data.session.user.user_metadata.full_name,
+          } : {}
+        };
+        
+        setUser(userData);
+        setSession(data.session);
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        // Dispatch events
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('login'));
+        window.dispatchEvent(new CustomEvent('authChange', { 
+          detail: { isAuthenticated: true, user: userData } 
+        }));
+        
+        console.log('Authentication refreshed successfully');
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error in refreshAuth:', error);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   // Provide auth context to the app
   const value = {
     user,
     session,
     loading,
     signOut,
+    refreshAuth,
     isAuthenticated: !!user,
     getUserPublicId,
     isLoggedIn,

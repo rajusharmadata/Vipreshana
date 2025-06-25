@@ -11,11 +11,77 @@ const Dashboard = () => {
     const { isAuthenticated, user } = useAuth();
     const isDark = theme === 'dark';
     const [isLoaded, setIsLoaded] = useState(false);
+    const [localUser, setLocalUser] = useState(null);
 
+    // Load animations
     useEffect(() => {
         setIsLoaded(true);
-        console.log('Dashboard - Auth State:', { isAuthenticated, user });
-    }, [isAuthenticated, user]);
+    }, []);
+    
+    // Check authentication state
+    // Initial check for user data in localStorage
+    useEffect(() => {
+        try {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setLocalUser(JSON.parse(storedUser));
+                console.log('Dashboard: Found user in localStorage');
+            } else {
+                console.log('Dashboard: No user found in localStorage');
+                setLocalUser(null);
+            }
+        } catch (error) {
+            console.error('Error reading user from localStorage:', error);
+            setLocalUser(null);
+        }
+    }, []);
+    
+    // Log auth state changes
+    useEffect(() => {
+        console.log('Dashboard - Auth State:', { 
+            isAuthenticated, 
+            user,
+            localUser: !!localUser,
+            localStorage: !!localStorage.getItem('user')
+        });
+    }, [isAuthenticated, user, localUser]);
+    
+    // Set up auth change listeners
+    useEffect(() => {
+        const handleAuthChange = () => {
+            console.log('Auth change event received in Dashboard');
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                try {
+                    setLocalUser(JSON.parse(userData));
+                    console.log('Dashboard updated with user from event');
+                } catch (e) {
+                    console.error('Error parsing user data in auth change event:', e);
+                    setLocalUser(null);
+                }
+            } else {
+                console.log('Dashboard cleared user from event');
+                setLocalUser(null);
+            }
+            
+            // Force a component re-render
+            setIsLoaded(prev => !prev);
+            setTimeout(() => setIsLoaded(prev => !prev), 10);
+        };
+        
+        // Listen for both storage and custom auth events
+        window.addEventListener('authChange', handleAuthChange);
+        window.addEventListener('storage', handleAuthChange);
+        window.addEventListener('login', handleAuthChange);
+        window.addEventListener('logout', handleAuthChange);
+        
+        return () => {
+            window.removeEventListener('authChange', handleAuthChange);
+            window.removeEventListener('storage', handleAuthChange);
+            window.removeEventListener('login', handleAuthChange);
+            window.removeEventListener('logout', handleAuthChange);
+        };
+    }, []);
 
     return (
         <>
@@ -51,9 +117,10 @@ const Dashboard = () => {
                         }`}
                             style={{ transitionDelay: '400ms' }}
                         >
-                            <div className="hidden">{`Auth state: ${isAuthenticated ? 'Authenticated' : 'Not authenticated'}`}</div>
+                            <div className="hidden">{`Auth state: ${isAuthenticated || !!localUser || !!localStorage.getItem('user') ? 'Authenticated' : 'Not authenticated'}`}</div>
                             
-                            {isAuthenticated ? (
+                            {/* Triple check authentication: context, state, or localStorage */}
+                            {(isAuthenticated || !!localUser || !!localStorage.getItem('user')) ? (
                                 <button
                                     className={`group relative px-6 py-2 rounded-xl font-semibold text-lg tracking-wide transition-all duration-500 transform hover:scale-110 hover:-translate-y-1 ${
                                         isDark

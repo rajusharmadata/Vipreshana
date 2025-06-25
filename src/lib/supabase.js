@@ -24,9 +24,9 @@ const cleanUrlOfTokens = () => {
   
   // Handle auth callback paths specially
   if (window.location.pathname.includes('/auth/')) {
-    // For auth callbacks, always redirect to dashboard without exposing tokens
-    window.history.replaceState(null, document.title, '/dashboard');
-    console.log('Auth callback URL cleaned and redirected to dashboard');
+    // For auth callbacks, always redirect to logindashboard without exposing tokens
+    window.history.replaceState(null, document.title, '/logindashboard');
+    console.log('Auth callback URL cleaned and redirected to logindashboard');
     return;
   }
   
@@ -88,10 +88,23 @@ export const signInWithGoogle = async () => {
     // Clean any existing tokens from URL before starting auth flow
     cleanUrlOfTokens();
     
+    // Generate a unique state parameter for CSRF protection
+    const stateParam = `security-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    
+    // Store the state temporarily in sessionStorage to verify on return
+    sessionStorage.setItem('oauth_state', stateParam);
+    
+    // Determine the redirect URL based on environment
+    const redirectUrl = window.location.hostname.includes('vipreshana-2.vercel.app') 
+      ? 'https://vipreshana-2.vercel.app/auth/callback'
+      : window.location.origin + '/auth/callback';
+      
+    console.log('Using redirect URL for Google auth:', redirectUrl);
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/auth/callback',
+        redirectTo: redirectUrl,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -99,8 +112,7 @@ export const signInWithGoogle = async () => {
         skipBrowserRedirect: false, // Ensure we use the proper redirect flow
         flowType: 'pkce', // Use PKCE flow for better security
         scopes: 'email profile', // Limit scope to just what we need
-        // Use state parameter for CSRF protection
-        state: `security-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
+        state: stateParam, // Use state parameter for CSRF protection
       }
     })
 
@@ -151,4 +163,92 @@ export const getCurrentUser = () => {
   
   // Otherwise check Supabase (for Google auth)
   return supabase.auth.getUser()
+}
+
+// Make supabase client available in global scope for testing and diagnostics
+if (typeof window !== 'undefined') {
+  window.supabase = supabase;
+  
+  // Add diagnostic functions to global scope
+  window.vipreshanaAuth = {
+    // Test authentication state detection
+    testAuthDetection: () => {
+      console.log('🧪 Testing authentication state detection...');
+      
+      // Check localStorage
+      const localUser = localStorage.getItem('user');
+      console.log('📦 User in localStorage:', localUser ? JSON.parse(localUser) : 'Not found');
+      
+      // Check Supabase session
+      supabase.auth.getSession().then(({ data, error }) => {
+        if (error) {
+          console.error('❌ Error getting Supabase session:', error);
+        } else {
+          console.log('🔐 Supabase session:', data.session ? 'Active' : 'None');
+          if (data.session) {
+            console.log('👤 User:', data.session.user.email);
+            console.log('⏰ Session expires:', new Date(data.session.expires_at * 1000).toLocaleString());
+          }
+        }
+      });
+      
+      // Check if auth events are working
+      window.addEventListener('authChange', (event) => {
+        console.log('🔔 Auth change event received:', event.detail);
+      });
+      
+      // Dispatch a test event
+      console.log('📣 Dispatching test auth event...');
+      window.dispatchEvent(new CustomEvent('authChange', { 
+        detail: { isAuthenticated: true, user: { id: 'test', email: 'test@example.com' } } 
+      }));
+    },
+    
+    // Test token refresh
+    testTokenRefresh: async () => {
+      console.log('🧪 Testing token refresh...');
+      
+      try {
+        const { data, error } = await supabase.auth.refreshSession();
+        
+        if (error) {
+          console.error('❌ Error refreshing token:', error);
+        } else if (data?.session) {
+          console.log('✅ Token refreshed successfully');
+          console.log('📊 Session expires at:', new Date(data.session.expires_at * 1000).toLocaleString());
+        } else {
+          console.warn('⚠️ No session returned, but no error either');
+        }
+      } catch (err) {
+        console.error('❌ Exception during token refresh:', err);
+      }
+    },
+    
+    // Check auth configuration
+    checkAuthConfig: () => {
+      console.log('🧪 Checking auth configuration...');
+      
+      // Check environment
+      const isProduction = window.location.hostname !== 'localhost' && 
+                          !window.location.hostname.includes('127.0.0.1');
+      console.log(`🌐 Environment: ${isProduction ? 'Production' : 'Development'}`);
+      
+      // Check Supabase URL
+      console.log('🔗 Supabase URL:', supabaseUrl);
+      
+      // Check callback URL
+      const callbackUrl = isProduction 
+        ? 'https://vipreshana-2.vercel.app/auth/callback' 
+        : window.location.origin + '/auth/callback';
+      console.log('🔙 Auth callback URL:', callbackUrl);
+      
+      // Check for URL parameters that might indicate auth issues
+      if (window.location.hash || window.location.search) {
+        console.warn('⚠️ URL contains hash or search parameters that might be auth-related');
+        console.log('📝 URL:', window.location.href);
+      }
+    }
+  };
+  
+  console.log('✅ Auth diagnostics available via window.vipreshanaAuth');
 }
