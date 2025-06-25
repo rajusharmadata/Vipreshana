@@ -1,0 +1,11 @@
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
+  ],
+  "env": {
+    "REACT_APP_SUPABASE_URL": "https://zvqdjuaslcaeizgtagjx.supabase.co",
+    "REACT_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2cWRqdWFzbGNhZWl6Z3RhZ2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjIxNDksImV4cCI6MjA2NTYzODE0OX0.grkFwyT_4OXSMknGWG3ytxOUUbHhSuBD_y1rIsmNLo8",
+    "REACT_APP_API_URL": "https://vipreshana-3.onrender.com"
+  }
+} 

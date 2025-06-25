@@ -103,8 +103,40 @@ const Navbar = () => {
     }
   };
 
-  // Check if user is logged in
+  // Check if user is logged in (using both isAuthenticated from context and user from localStorage)
   const isLoggedIn = isAuthenticated || !!user;
+  
+  // Force UI update on auth state changes
+  // Log auth state changes
+  useEffect(() => {
+    console.log('Navbar - Auth state updated:', { isAuthenticated, user });
+  }, [isAuthenticated, user]);
+  
+  // Set up auth change listeners
+  useEffect(() => {
+    const handleAuthChange = () => {
+      console.log('Auth change event received in Navbar');
+      try {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          setUser(JSON.parse(userData));
+        } else if (!isAuthenticated) {
+          setUser(null);
+        }
+      } catch (e) {
+        console.error('Error handling auth change in Navbar:', e);
+      }
+    };
+    
+    // Listen for both storage and custom auth events
+    window.addEventListener('authChange', handleAuthChange);
+    window.addEventListener('storage', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('authChange', handleAuthChange);
+      window.removeEventListener('storage', handleAuthChange);
+    };
+  }, [isAuthenticated]);
 
   return (
     <>
@@ -167,17 +199,15 @@ const Navbar = () => {
                 Contact
               </Link>
               
-              {/* Only show Dashboard and Logout when logged in */}
+              {/* Only show Dashboard if logged in */}
               {isLoggedIn && (
-                <>
-                  <Link to="/dashboard" className={`hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>Dashboard</Link>
-                  <button 
-                    onClick={handleLogout}
-                    className={`hover:text-red-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
-                  >
-                    Logout
-                  </button>
-                </>
+                <Link 
+                  to="/dashboard" 
+                  className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
+                >
+                  <FiUser className="text-lg" />
+                  Dashboard
+                </Link>
               )}
             </div>
 
@@ -195,6 +225,8 @@ const Navbar = () => {
               >
                 {isDark ? "☀️" : "🌙"}
               </button>
+              
+              {/* Removed login button as requested */}
 
               {user && (
                 <div className="relative">
@@ -347,13 +379,26 @@ const Navbar = () => {
             Contact
           </Link>
 
-          {user && (
+          {/* Only show user navigation when logged in */}
+          {isLoggedIn && (
             <>
+              <Link
+                to="/dashboard"
+                onClick={closeMenu}
+                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${
+                  isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
+                }`}
+              >
+                <FiUser className="text-lg" />
+                Dashboard
+              </Link>
+              
               <Link
                 to="/profile"
                 onClick={closeMenu}
-                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
-                  }`}
+                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${
+                  isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
+                }`}
               >
                 <FiUser className="text-lg" />
                 My Profile
@@ -364,8 +409,9 @@ const Navbar = () => {
                   closeMenu();
                   handleLogout();
                 }}
-                className={`flex items-center gap-2 text-left no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-red-400 hover:text-red-500" : "text-red-600 hover:text-red-700"
-                  }`}
+                className={`flex items-center gap-2 text-left no-underline px-4 py-3 rounded-lg transition ${
+                  isDark ? "text-red-400 hover:text-red-500" : "text-red-600 hover:text-red-700"
+                }`}
               >
                 <FiLogOut className="text-lg" />
                 Logout
