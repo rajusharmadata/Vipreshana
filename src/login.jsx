@@ -36,9 +36,9 @@ const Login = () => {
     
     // Handle auth callback paths specially
     if (window.location.pathname.includes('/auth/')) {
-      // For auth callbacks, always redirect to dashboard without exposing tokens
-      window.history.replaceState(null, document.title, '/dashboard');
-      console.log('Auth callback URL cleaned and redirected to dashboard');
+      // For auth callbacks, always redirect to logindashboard without exposing tokens
+      window.history.replaceState(null, document.title, '/logindashboard');
+      console.log('Auth callback URL cleaned and redirected to logindashboard');
       return;
     }
     
@@ -123,10 +123,10 @@ const Login = () => {
         cleanUrlOfTokens();
         
         // Check if we were redirected from a protected route
-        const redirectPath = location.state?.from || '/dashboard';
+        const redirectPath = location.state?.from || '/logindashboard';
         console.log('Redirecting to:', redirectPath);
         
-        // Navigate to the redirect path or dashboard
+        // Navigate to the redirect path or logindashboard
         navigate(redirectPath, { replace: true });
       }, 1500);
     } catch (error) {
@@ -169,7 +169,7 @@ const Login = () => {
       });
       
       // Store the redirect path in sessionStorage to use after Google auth
-      const redirectPath = location.state?.from || '/dashboard';
+      const redirectPath = location.state?.from || '/logindashboard';
       sessionStorage.setItem('auth_redirect', redirectPath);
       
       // eslint-disable-next-line no-unused-vars

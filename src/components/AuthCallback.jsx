@@ -54,11 +54,11 @@ const AuthCallback = () => {
               detail: { isAuthenticated: true, user: safeUserData } 
             }));
             
-            // Get the intended URL from sessionStorage or default to dashboard
-            const redirectTo = sessionStorage.getItem('redirectAfterLogin') || '/dashboard';
+            // Get the intended URL from sessionStorage or default to LoginDashboard
+            const redirectTo = sessionStorage.getItem('redirectAfterLogin') || '/logindashboard';
             sessionStorage.removeItem('redirectAfterLogin'); // Clean up
             
-            // Redirect to the dashboard or intended URL
+            // Redirect to the LoginDashboard or intended URL
             setTimeout(() => navigate(redirectTo), 1000);
           } else {
             // No session but no error either - strange case

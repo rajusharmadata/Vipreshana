@@ -49,9 +49,9 @@ const AuthSecurityHandler = ({ children }) => {
       
       // Handle auth callback paths specially
       if (window.location.pathname.includes('/auth/')) {
-        // For auth callbacks, always redirect to dashboard without exposing tokens
-        window.history.replaceState(null, document.title, '/dashboard');
-        console.log('Auth callback URL cleaned and redirected to dashboard');
+        // For auth callbacks, always redirect to logindashboard without exposing tokens
+        window.history.replaceState(null, document.title, '/logindashboard');
+        console.log('Auth callback URL cleaned and redirected to logindashboard');
         return;
       }
       
@@ -122,9 +122,9 @@ const ProtectedPublicRoute = ({ children }) => {
     }
   }, []);
   
-  // If user is authenticated in context or localStorage, redirect to dashboard
+  // If user is authenticated in context or localStorage, redirect to logindashboard
   if (isAuthenticated || localUser) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/logindashboard" replace />;
   }
   
   // Otherwise, show the requested public route
