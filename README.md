@@ -1,6 +1,4 @@
-
-
-<hr>
+<h1 align ="center"> Vipreshana 🚚</h1>
 
 <div align="center">
   <img src="https://forthebadge.com/images/badges/built-with-love.svg" />&nbsp;
@@ -37,6 +35,19 @@
 **Vipreshana** is a **real-time delivery and complaint tracking platform** that enables users and administrators to monitor service status, manage issues, and ensure transparency across the delivery lifecycle. With **live location tracking**, **complaint resolution workflow**, and **SMS notifications**, the platform is aimed at transforming operational efficiency and enhancing user trust.
 
 ---
+
+<details>
+  <summary><strong>📑 Table of Contents</strong></summary>
+
+- [💡 Problem Statement](#-problem-statement)
+- [✅ Proposed Solution](#-proposed-solution)
+- [🔧 Tech Stack](#-tech-stack)
+- [✨ Features](#-features)
+- [📦 Local Setup](#-local-setup)
+  - [🍴 1. Fork & Clone the Repository](#-1-fork--clone-the-repository)
+- [📄 License](#-license)
+
+  </details>
 
 ## 💡 Problem Statement
 
@@ -76,13 +87,10 @@ Organizations and users often face challenges in tracking service requests, deli
 
 ---
 
----
-
 ## 📦 Local Setup
 
 Want to run **Vipreshana** locally and contribute? Follow these simple steps! 🚀✨
 
----
 
 ### 🍴 1. Fork & Clone the Repository
 
@@ -125,3 +133,12 @@ http://localhost:3000/
 
 # Backend server runs on
 http://localhost:5000/
+
+```
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE.txt)
+
+---
