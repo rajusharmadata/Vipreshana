@@ -109,7 +109,6 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running', status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// ✅ ✅ ✅ Login route added here
 app.post('/api/login', async (req, res) => {
   try {
     const { phone, password } = req.body;
