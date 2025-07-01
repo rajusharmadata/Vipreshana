@@ -18,10 +18,11 @@ const allowedOrigins = [
   'https://vipreshana-2.vercel.app'     // deployed frontend
 ];
 
+// ✅ Updated CORS Configuration
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+      callback(null, origin); // allow request from this origin
     } else {
       callback(new Error('Not allowed by CORS'));
     }
@@ -31,11 +32,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 
+// ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ Logger
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log(`Origin: ${req.headers.origin}`);
   next();
 });
 
@@ -48,7 +52,7 @@ if (process.env.MONGODB_URI) {
     .catch(err => console.error('❌ MongoDB connection failed:', err));
 }
 
-// ✅ Mongoose model for registrations collection
+// ✅ Mongoose schema
 const registrationSchema = new mongoose.Schema({
   name: String,
   phone: {
@@ -68,6 +72,7 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 console.log('Auth routes are at /api/auth');
 
+// ✅ Basic health check
 app.get('/', (req, res) => {
   res.json({
     message: 'Vipreshana Server is running!',
@@ -92,23 +97,29 @@ app.get('/health', (req, res) => {
   });
 });
 
+// ✅ User profile routes
 app.get('/api/user/profile', Controllers.GetUserProfileController);
 app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
+// ✅ OTP routes
 app.post('/api/send-otp', otpRateLimiter, Controllers.SendOTPController);
 app.post('/api/verify-otp', otpVerificationRateLimiter, Controllers.VerifyOTPController);
 
+// ✅ Auth routes
 app.post('/api/register', Controllers.UserRegisterController);
 app.post('/api/forgot-password', Controllers.ForgotPasswordController);
 
+// ✅ Bookings
 app.post('/api/bookings', Controllers.BookingController);
 app.get('/api/details', Controllers.GetAllBookingController);
 
+// ✅ Server test
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running', status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// ✅ Login route
 app.post('/api/login', async (req, res) => {
   try {
     const { phone, password } = req.body;
@@ -139,7 +150,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 404 fallback
+// ✅ 404 fallback
 app.use((req, res) => {
   console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({
@@ -154,13 +165,13 @@ app.use((req, res) => {
   });
 });
 
-// Error handler
+// ✅ Error handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!', message: err.message });
 });
 
-// Start server
+// ✅ Start server
 app.listen(PORT, () => {
   figlet('Vipreshana Server', (err, data) => {
     if (err) {
