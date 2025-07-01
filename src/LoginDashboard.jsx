@@ -175,7 +175,9 @@ const LoginDashboard = () => {
                     <div className="relative z-10 flex items-center justify-center h-full text-center text-white px-6">
                         <div>
                             <h1 className="text-5xl font-bold mb-4">Transportation Hub</h1>
-                            <p className="text-xl opacity-90">Your complete logistics management solution</p>
+                            <p className="text-xl font-semibold text-white bg-purple-800 bg-opacity-70 px-3 py-1.5 rounded-md shadow-md inline-block">
+                                Your complete logistics management solution
+                            </p>
                             <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-purple-500 mx-auto mt-6 rounded-full" />
                         </div>
                     </div>
