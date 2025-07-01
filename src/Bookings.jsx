@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "./context/ThemeContext";
 import { motion } from "framer-motion";
-import Navbar from "./components/Navbar"; // Import Navbar
+import Navbar from "./components/Navbar";
 import PageMeta from './components/Pagemeta';
+
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
 const UserBookings = () => {
-  // Use theme from context, not local state (for global consistency)
   const { theme } = useTheme();
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState(null);
@@ -16,47 +16,44 @@ const UserBookings = () => {
   const isDarkMode = theme === "dark";
 
   useEffect(() => {
-  const fetchUserBookings = async () => {
-    try {
-      const phone = localStorage.getItem("userPhone");
+    const fetchUserBookings = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const phone = storedUser?.phone;
 
-      if (!phone || typeof phone !== "string" || phone.trim() === "") {
-        setError("Phone number not found or invalid in local storage");
-        return;
+        if (!phone || typeof phone !== "string" || phone.trim() === "") {
+          setError("Phone number not found or invalid in local storage");
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
+
+        if (response.status === 404) {
+          setBookings([]);
+          return;
+        }
+
+        if (!response.ok) {
+          setError("Failed to fetch bookings. Please try again later.");
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          setError("Invalid booking data format received.");
+          return;
+        }
+
+        setBookings(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Something went wrong while fetching bookings.");
       }
+    };
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
-
-      // Handle common HTTP error statuses gracefully
-      if (response.status === 404) {
-        setBookings([]); // No bookings yet
-        return;
-      }
-
-      if (!response.ok) {
-        setError("Failed to fetch bookings. Please try again later.");
-        return;
-      }
-
-      // Try parsing the response JSON
-      const data = await response.json();
-
-      // Ensure data is an array (optional sanity check)
-      if (!Array.isArray(data)) {
-        setError("Invalid booking data format received.");
-        return;
-      }
-
-      setBookings(data);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Something went wrong while fetching bookings.");
-    }
-  };
-
-  fetchUserBookings();
-}, []);
-
+    fetchUserBookings();
+  }, []);
 
   const handleTrackDriver = (bookingId) => {
     localStorage.setItem("bookingId", bookingId);
@@ -65,7 +62,7 @@ const UserBookings = () => {
 
   return (
     <>
-    <PageMeta /> 
+      <PageMeta />
       <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 50 }}
