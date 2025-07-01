@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const figlet = require('figlet');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
+
 const Configs = require('./configs/Configs');
 const connectMongoDB = require('./Databases/ConnectDB');
 const Controllers = require('./Controllers/index.controllers');
@@ -11,10 +13,11 @@ const { otpRateLimiter, otpVerificationRateLimiter } = require('./middleware/rat
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// ✅ Allowed frontend origins
-const allowedOrigins = ['https://vipreshana-2.vercel.app'];
+const allowedOrigins = [
+  'http://localhost:3000',              // dev frontend
+  'https://vipreshana-2.vercel.app'     // deployed frontend
+];
 
-// ✅ Secure CORS middleware setup
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -31,13 +34,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Log all incoming requests
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
-// MongoDB connection
+// ✅ MongoDB connection
 connectMongoDB(Configs.DB_URI);
 
 if (process.env.MONGODB_URI) {
@@ -46,14 +48,28 @@ if (process.env.MONGODB_URI) {
     .catch(err => console.error('❌ MongoDB connection failed:', err));
 }
 
-// Auth routes
+// ✅ Mongoose model for registrations collection
+const registrationSchema = new mongoose.Schema({
+  name: String,
+  phone: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: String,
+  email: String,
+  role: String
+}, { collection: 'registrations' });
+
+const Registration = mongoose.models.Registration || mongoose.model('Registration', registrationSchema);
+
+// ✅ Auth routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 console.log('Auth routes are at /api/auth');
 
-// Default route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Vipreshana Server is running!',
     availableEndpoints: [
       'GET /health - Server health check',
@@ -62,9 +78,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check
 app.get('/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     services: {
@@ -77,29 +92,55 @@ app.get('/health', (req, res) => {
   });
 });
 
-// User Profile Routes
 app.get('/api/user/profile', Controllers.GetUserProfileController);
 app.put('/api/user/profile', Controllers.UpdateUserProfileController);
 app.put('/api/user/password', Controllers.UpdateUserPasswordController);
 
-// OTP Routes
 app.post('/api/send-otp', otpRateLimiter, Controllers.SendOTPController);
 app.post('/api/verify-otp', otpVerificationRateLimiter, Controllers.VerifyOTPController);
 
-// Auth/Registration Routes
 app.post('/api/register', Controllers.UserRegisterController);
 app.post('/api/forgot-password', Controllers.ForgotPasswordController);
 
-// Booking Routes
 app.post('/api/bookings', Controllers.BookingController);
 app.get('/api/details', Controllers.GetAllBookingController);
 
-// Server Test
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running', status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// 404 Fallback Route
+// ✅ ✅ ✅ Login route added here
+app.post('/api/login', async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+
+    if (!phone || !password) {
+      return res.status(400).json({ message: 'Phone and password are required.' });
+    }
+
+    const user = await Registration.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ message: 'No user found with this phone number.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Incorrect password. Please try again.' });
+    }
+
+    const { password: _, ...safeUser } = user.toObject();
+    return res.status(200).json({
+      message: 'Login successful!',
+      user: safeUser
+    });
+
+  } catch (err) {
+    console.error('Login error:', err.message);
+    return res.status(500).json({ message: 'Server error. Please try again later.' });
+  }
+});
+
+// 404 fallback
 app.use((req, res) => {
   console.log(`404 Not Found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({
@@ -114,13 +155,13 @@ app.use((req, res) => {
   });
 });
 
-// Error Handler
+// Error handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!', message: err.message });
 });
 
-// Server Start
+// Start server
 app.listen(PORT, () => {
   figlet('Vipreshana Server', (err, data) => {
     if (err) {
