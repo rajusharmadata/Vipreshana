@@ -51,6 +51,7 @@ const Login = () => {
     setIsLoading(true);
     cleanUrlOfTokens();
 
+    // Optional: Add phone number validation
     if (!/^[6-9]\d{9}$/.test(formData.phone)) {
       toast.error('⚠️ Enter a valid Indian phone number');
       setIsLoading(false);
@@ -58,14 +59,12 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/login`, formData, {
-        withCredentials: true // optional: for cookie-based auth
-      });
+      const response = await axios.post(`${API_BASE_URL}/login`, formData);
       const { user, message } = response.data;
 
       if (user) {
         const safeUserData = {
-          id: user._id,
+          id: user.id,
           name: user.name,
           phone: user.phone,
           email: user.email,
