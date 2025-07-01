@@ -51,11 +51,14 @@ const Login = () => {
     setIsLoading(true);
     cleanUrlOfTokens();
 
-    if (!/^[6-9]\d{9}$/.test(formData.phone)) {
-      toast.error('⚠️ Enter a valid Indian phone number');
-      setIsLoading(false);
-      return;
-    }
+   const validIndianNumber = /^[6-9]\d{9}$/;
+const allowedTestPhones = ['4444444444', '1212122121']; // Add more if needed
+
+if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formData.phone)) {
+  toast.error('⚠️ Enter a valid phone number');
+  setIsLoading(false);
+  return;
+}
 
     try {
       const response = await axios.post(`${API_BASE_URL}/api/login`, formData, {
