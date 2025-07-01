@@ -51,21 +51,22 @@ const Login = () => {
     setIsLoading(true);
     cleanUrlOfTokens();
 
+    // ⚠️ Phone validation is disabled for testing purposes.
+    /*
     if (!/^[6-9]\d{9}$/.test(formData.phone)) {
       toast.error('⚠️ Enter a valid Indian phone number');
       setIsLoading(false);
       return;
     }
+    */
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/login`, formData, {
-        withCredentials: true // optional: for cookie-based auth
-      });
+      const response = await axios.post(`${API_BASE_URL}/login`, formData);
       const { user, message } = response.data;
 
       if (user) {
         const safeUserData = {
-          id: user._id,
+          id: user.id,
           name: user.name,
           phone: user.phone,
           email: user.email,
@@ -167,45 +168,19 @@ const Login = () => {
       {redirectFrom && <AuthRequired redirectPath={redirectFrom} />}
 
       <div
-        className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
-          isDark ? 'brightness-75' : 'brightness-100'
-        }`}
+        className={`relative h-screen bg-cover bg-center transition-all duration-300 ${isDark ? 'brightness-75' : 'brightness-100'}`}
         style={{
-          backgroundImage:
-            "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg')",
+          backgroundImage: "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg')",
         }}
       >
-        <div
-          className={`absolute inset-0 ${
-            isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'
-          } flex items-center justify-center`}
-        >
-          <div
-            className={`p-10 rounded-2xl shadow-2xl w-96 ${
-              isDark ? 'bg-gray-800 text-white border border-gray-700' : 'bg-white text-gray-900'
-            }`}
-          >
-            <h1
-              className={`text-4xl font-bold text-center mb-2 ${
-                isDark ? 'text-blue-400' : 'text-blue-600'
-              }`}
-            >
-              Welcome Back!
-            </h1>
-            <p
-              className={`text-md text-center mb-6 ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}
-            >
-              Please enter your credentials to login.
-            </p>
+        <div className={`absolute inset-0 ${isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'} flex items-center justify-center`}>
+          <div className={`p-10 rounded-2xl shadow-2xl w-96 ${isDark ? 'bg-gray-800 text-white border border-gray-700' : 'bg-white text-gray-900'}`}>
+            <h1 className={`text-4xl font-bold text-center mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>Welcome Back!</h1>
+            <p className={`text-md text-center mb-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Please enter your credentials to login.</p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Phone Input */}
               <div>
-                <label htmlFor="phone" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  📞 Phone
-                </label>
+                <label htmlFor="phone" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📞 Phone</label>
                 <input
                   type="tel"
                   id="phone"
@@ -220,11 +195,8 @@ const Login = () => {
                 />
               </div>
 
-              {/* Password Input */}
               <div className="mb-4">
-                <label htmlFor="password" className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  🔒 Password
-                </label>
+                <label htmlFor="password" className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>🔒 Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -249,7 +221,6 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Login Button */}
               <button
                 type="submit"
                 disabled={isDisabled || isLoading}
@@ -263,7 +234,6 @@ const Login = () => {
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
 
-              {/* Divider */}
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className={`w-full border-t ${isDark ? 'border-gray-700' : 'border-gray-300'}`}></div>
@@ -273,7 +243,6 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Google Login */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
@@ -292,7 +261,6 @@ const Login = () => {
               </button>
             </form>
 
-            {/* Register & Forgot Password */}
             <p className={`text-center text-sm mt-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
               Don't have an account?{' '}
               <Link to="/register" className={`font-semibold hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
