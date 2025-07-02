@@ -179,9 +179,9 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
         }}
       >
         <div
-          className={`absolute inset-0 ${
+          className={`absolute top-[65px] right-0 bottom-0 left-0 ${
             isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'
-          } flex items-center justify-center`}
+          } flex items-center justify-center`} style={{ top: '65px' }}
         >
           <div
             className={`p-10 rounded-2xl shadow-2xl w-96 ${
