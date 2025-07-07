@@ -221,7 +221,7 @@ const Navbar = () => {
                 className={`p-2
     ${isDark
                     ? " text-yellow-300"
-                    : "text-blue-400"
+                    : "text-purple-500"
                   }`}
                 aria-label="Toggle theme"
               >
