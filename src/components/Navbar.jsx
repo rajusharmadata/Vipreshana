@@ -218,8 +218,7 @@ const Navbar = () => {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className={`p-2
-    ${isDark
+                className={`p-2 ${isDark
                     ? " text-yellow-300"
                     : "text-purple-500"
                   }`}
