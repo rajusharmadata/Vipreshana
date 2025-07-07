@@ -9,6 +9,7 @@ import { signInWithGoogle } from './lib/supabase';
 import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
 import AuthRequired from './components/AuthRequired';
+import bgg from './bbg.jpg'
 
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
@@ -175,13 +176,13 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
         }`}
         style={{
           backgroundImage:
-            "url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg')",
+            `url(${bgg})`,
         }}
       >
         <div
-          className={`absolute top-[65px] right-0 bottom-0 left-0 ${
-            isDark ? 'bg-black bg-opacity-80' : 'bg-black bg-opacity-60'
-          } flex items-center justify-center`} style={{ top: '65px' }}
+          className={`absolute top-[90px] right-0 bottom-0 left-0 ${
+            isDark ? 'bg-opacity-80' : 'bg-opacity-60'
+          } flex items-center justify-center`} style={{ top: '90px' }}
         >
           <div
             className={`p-10 rounded-2xl shadow-2xl w-96 ${
@@ -195,14 +196,7 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
             >
               Welcome Back!
             </h1>
-            <p
-              className={`text-md text-center mb-6 ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}
-            >
-              Please enter your credentials to login.
-            </p>
-
+            
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Phone Input */}
               <div>
