@@ -3,7 +3,7 @@ import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="py-6 px-4 md:px-12 bg-gray-800 text-gray-300">
+        <footer className="pt-8 pb-6 px-4 md:px-12 bg-gray-800 text-gray-300">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
                 <p className="text-sm">&copy; {new Date().getFullYear()} Vipreshana. All rights reserved.</p>
                 <div className="flex space-x-6 text-xl">

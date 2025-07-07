@@ -131,7 +131,7 @@ const RegistrationForm = () => {
       <Navbar />
       <div className={`min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-300 ${
         isDark ? 'bg-black text-white' : 'bg-gradient-to-br from-indigo-50 via-white to-cyan-50 text-gray-900'
-      }`}>
+      }`} style={{ marginTop: '57px' }}>
         <ToastContainer />
         <div className="w-full max-w-5xl mx-auto relative z-10">
           <div className={`rounded-2xl shadow-xl border p-6 sm:p-8 lg:p-12 transition-all duration-300 ${
