@@ -2,7 +2,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { FiInfo, FiMap, FiPhone, FiUser,FiLogOut } from "react-icons/fi";
+import { FiInfo, FiMap, FiPhone, FiUser, FiLogOut } from "react-icons/fi";
+import { Sun, Moon } from "lucide-react";
+
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -80,20 +82,20 @@ const Navbar = () => {
       if (signOut) {
         await signOut();
       }
-      
+
       // Clear local storage
       localStorage.removeItem('user');
       localStorage.removeItem('currentUser');
-      
+
       // Update state
       setUser(null);
-      
+
       // Close mobile menu if open
       closeMenu();
-      
+
       // Redirect to home page
       navigate('/', { replace: true });
-      
+
       // Optional: Show toast notification
       if (window.toast) {
         window.toast.success('Logged out successfully');
@@ -105,13 +107,13 @@ const Navbar = () => {
 
   // Check if user is logged in (using both isAuthenticated from context and user from localStorage)
   const isLoggedIn = isAuthenticated || !!user;
-  
+
   // Force UI update on auth state changes
   // Log auth state changes
   useEffect(() => {
     console.log('Navbar - Auth state updated:', { isAuthenticated, user });
   }, [isAuthenticated, user]);
-  
+
   // Set up auth change listeners
   useEffect(() => {
     const handleAuthChange = () => {
@@ -127,11 +129,11 @@ const Navbar = () => {
         console.error('Error handling auth change in Navbar:', e);
       }
     };
-    
+
     // Listen for both storage and custom auth events
     window.addEventListener('authChange', handleAuthChange);
     window.addEventListener('storage', handleAuthChange);
-    
+
     return () => {
       window.removeEventListener('authChange', handleAuthChange);
       window.removeEventListener('storage', handleAuthChange);
@@ -198,11 +200,11 @@ const Navbar = () => {
                 <FiPhone className="text-lg" />
                 Contact
               </Link>
-              
+
               {/* Only show Dashboard if logged in */}
               {isLoggedIn && (
-                <Link 
-                  to="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
                 >
                   <FiUser className="text-lg" />
@@ -216,16 +218,20 @@ const Navbar = () => {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-full transition-all duration-300 shadow
-                  ${isDark
-                    ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
-                    : "bg-gray-800 text-yellow-400 hover:bg-gray-700"
+                className={`p-2 ${isDark
+                    ? " text-yellow-300"
+                    : "text-purple-500"
                   }`}
                 aria-label="Toggle theme"
               >
-                {isDark ? "☀️" : "🌙"}
+                {isDark ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
               </button>
-              
+
+
               {/* Removed login button as requested */}
 
               {user && (
@@ -385,20 +391,18 @@ const Navbar = () => {
               <Link
                 to="/dashboard"
                 onClick={closeMenu}
-                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${
-                  isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
-                }`}
+                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
+                  }`}
               >
                 <FiUser className="text-lg" />
                 Dashboard
               </Link>
-              
+
               <Link
                 to="/profile"
                 onClick={closeMenu}
-                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${
-                  isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
-                }`}
+                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
+                  }`}
               >
                 <FiUser className="text-lg" />
                 My Profile
@@ -409,9 +413,8 @@ const Navbar = () => {
                   closeMenu();
                   handleLogout();
                 }}
-                className={`flex items-center gap-2 text-left no-underline px-4 py-3 rounded-lg transition ${
-                  isDark ? "text-red-400 hover:text-red-500" : "text-red-600 hover:text-red-700"
-                }`}
+                className={`flex items-center gap-2 text-left no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-red-400 hover:text-red-500" : "text-red-600 hover:text-red-700"
+                  }`}
               >
                 <FiLogOut className="text-lg" />
                 Logout
