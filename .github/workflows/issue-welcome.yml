@@ -1,0 +1,47 @@
+name: Welcome Contributor
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Comment on new issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const login = context.payload.sender.login;
+            const issue_number = context.issue.number;
+
+            const repoName = "Vipreshana";
+            const repoUrl = "https://github.com/sailaja-adapa/Vipreshana";
+            const ownerName = "sailaja-adapa";
+            const ownerUrl = "https://github.com/sailaja-adapa";
+
+            const firstTime = context.payload.sender.type === "User" &&
+              context.payload.issue.author_association === "FIRST_TIME_CONTRIBUTOR";
+
+            let message;
+
+            if (firstTime) {
+              message = `👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉
+
+                            If you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
+            } else {
+              message = `Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!
+
+                        Consider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
+            }
+
+            await github.rest.issues.createComment({
+              issue_number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
