@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
 import { useTheme } from './context/ThemeContext';
 import OTPVerification from './components/OTPVerification';
+import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight';
+import LiveBackgroundDark from './components/livebackground/LiveBackgroundDark';
 
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
@@ -129,13 +131,15 @@ const RegistrationForm = () => {
     <>
       <PageMeta />
       <Navbar />
-      <div className={`min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-300 ${
-        isDark ? 'bg-black text-white' : 'bg-gradient-to-br from-indigo-50 via-white to-cyan-50 text-gray-900'
-      }`} style={{ marginTop: '57px' }}>
-        <ToastContainer />
+      <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 transition-all duration-300" style={{ marginTop: '57px' }}>
+        {/* Live animated background */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          {isDark ? <LiveBackgroundDark /> : <LiveBackgroundLight />}
+        </div>
+        {/* Main content above background */}
         <div className="w-full max-w-5xl mx-auto relative z-10">
           <div className={`rounded-2xl shadow-xl border p-6 sm:p-8 lg:p-12 transition-all duration-300 ${
-            isDark ? 'bg-gray-900 border-gray-700 text-white' : 'bg-white/80 border-white/20 text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             <div className="text-center mb-8">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
