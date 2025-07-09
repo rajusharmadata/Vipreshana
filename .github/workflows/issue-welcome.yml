@@ -1,0 +1,69 @@
+name: Welcome Contributor
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Load custom message if exists
+        id: load_message
+        run: |
+          if [[ -f ".github/contributor-message.md" ]]; then
+            echo "file_found=true" >> $GITHUB_OUTPUT
+            content=$(cat .github/contributor-message.md)
+            echo "message<<EOF" >> $GITHUB_OUTPUT
+            echo "$content" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "file_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on new issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const login = context.payload.sender.login;
+            const issue_number = context.issue.number;
+
+            // Hardcoded links
+            const repoName = "Vipreshana";
+            const repoUrl = "https://github.com/sailaja-adapa/Vipreshana";
+            const ownerName = "sailaja-adapa";
+            const ownerUrl = "https://github.com/sailaja-adapa";
+
+            const firstTime = context.payload.sender.type === "User" &&
+              context.payload.issue.author_association === "FIRST_TIME_CONTRIBUTOR";
+
+            let message;
+
+            if ("${{ steps.load_message.outputs.file_found }}" === "true") {
+              message = `${{ steps.load_message.outputs.message }}`.replaceAll("{{username}}", login)
+                .replaceAll("{{repo}}", repoName)
+                .replaceAll("{{repoUrl}}", repoUrl)
+                .replaceAll("{{owner}}", ownerName)
+                .replaceAll("{{ownerUrl}}", ownerUrl);
+            } else if (firstTime) {
+              message = `👋 Hi @${login}, welcome to [Vipreshana](${repoUrl}) and thanks for opening your **first issue**! 🎉
+
+If you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
+            } else {
+              message = `Hey @${login}, thanks for opening an issue on [Vipreshana](${repoUrl})!
+
+Consider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });
