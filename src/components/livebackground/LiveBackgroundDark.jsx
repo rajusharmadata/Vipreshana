@@ -40,7 +40,7 @@ export default function LiveBackgroundDark() {
     void main() {
       vec2 uv = vUv;
 
-      // Create continuous wavy displacement
+      // continuous wavy pattern
       float waveX = sin((uv.y + uTime * 0.2) * 10.0) * 0.02;
       float waveY = cos((uv.x + uTime * 0.25) * 10.0) * 0.02;
       uv.x += waveX;
@@ -83,6 +83,7 @@ export default function LiveBackgroundDark() {
     };
     animate(0);
 
+    //cleanup function
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('resize', resize);

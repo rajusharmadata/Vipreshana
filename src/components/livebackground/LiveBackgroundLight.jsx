@@ -10,6 +10,7 @@ export default function LiveBackgroundLight() {
     const container = containerRef.current;
     if (!container) return;
 
+    //using and implementeing webGL
     const renderer = new Renderer({ dpr: 2 });
     const gl = renderer.gl;
     container.appendChild(gl.canvas);
@@ -40,7 +41,7 @@ export default function LiveBackgroundLight() {
     void main() {
       vec2 uv = vUv;
 
-      // Create continuous wavy displacement
+      // continuous wavy pattern
       float waveX = sin((uv.y + uTime * 0.2) * 10.0) * 0.02;
       float waveY = cos((uv.x + uTime * 0.25) * 10.0) * 0.02;
       uv.x += waveX;
@@ -74,6 +75,7 @@ export default function LiveBackgroundLight() {
     window.addEventListener('resize', resize);
     resize();
 
+    //looping
     let frame;
     const animate = (t) => {
       frame = requestAnimationFrame(animate);
@@ -82,6 +84,7 @@ export default function LiveBackgroundLight() {
     };
     animate(0);
 
+    //cleanup function
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('resize', resize);
@@ -89,5 +92,6 @@ export default function LiveBackgroundLight() {
     };
   }, []);
 
+  //rendering the background
   return <div ref={containerRef} className="w-full h-full" />;
 }
