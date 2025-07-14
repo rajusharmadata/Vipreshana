@@ -31,17 +31,13 @@ jobs:
             let message;
 
             if (firstTime) {
-              message = `
-👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉
+              message = `👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉
 
-If you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.
-              `;
+If you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
             } else {
-              message = `
-Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!
+              message = `Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!
 
-Consider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌
-              `;
+Consider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
             }
 
             await github.rest.issues.createComment({
