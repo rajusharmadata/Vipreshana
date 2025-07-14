@@ -31,13 +31,9 @@ jobs:
             let message;
 
             if (firstTime) {
-              message = `👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉
-
-If you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
+              message = `👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉\n\nIf you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
             } else {
-              message = `Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!
-
-Consider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
+              message = `Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!\n\nConsider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
             }
 
             await github.rest.issues.createComment({
