@@ -9,7 +9,8 @@ import { signInWithGoogle } from './lib/supabase';
 import Navbar from './components/Navbar';
 import PageMeta from './components/Pagemeta';
 import AuthRequired from './components/AuthRequired';
-import bgg from './bbg.jpg'
+import LiveBackgroundDark from './components/livebackground/LiveBackgroundDark';
+import LiveBackgroundLight from './components/livebackground/LiveBackgroundLight';
 
 const API_BASE_URL = 'https://vipreshana-3.onrender.com';
 
@@ -170,15 +171,13 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
       <Navbar />
       {redirectFrom && <AuthRequired redirectPath={redirectFrom} />}
 
-      <div
-        className={`relative h-screen bg-cover bg-center transition-all duration-300 ${
+      <div className={`relative min-h-screen bg-cover bg-center transition-all duration-300 ${
           isDark ? 'brightness-75' : 'brightness-100'
         }`}
-        style={{
-          backgroundImage:
-            `url(${bgg})`,
-        }}
       >
+        <div className="absolute inset-0 w-full h-full z-0">
+          {isDark ? <LiveBackgroundDark /> : <LiveBackgroundLight />}
+        </div>
         <div
           className={`absolute top-[90px] right-0 bottom-0 left-0 ${
             isDark ? 'bg-opacity-80' : 'bg-opacity-60'
@@ -186,12 +185,12 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
         >
           <div
             className={`p-10 rounded-2xl shadow-2xl w-96 ${
-              isDark ? 'bg-gray-800 text-white border border-gray-700' : 'bg-white text-gray-900'
+              isDark ? 'text-white border border-gray-700' : 'text-gray-900'
             }`}
           >
             <h1
               className={`text-4xl font-bold text-center mb-2 ${
-                isDark ? 'text-blue-400' : 'text-blue-600'
+                isDark ? 'text-white' : 'text-black'
               }`}
             >
               Welcome Back!
@@ -262,11 +261,12 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
 
               {/* Divider */}
               <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className={`w-full border-t ${isDark ? 'border-gray-700' : 'border-gray-300'}`}></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className={`px-2 ${isDark ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>Or continue with</span>
+                <div className="flex items-center w-full">
+                  <div className={`flex-grow border-t ${isDark ? 'border-gray-700' : 'border-gray-300'}`}></div>
+                  <span className={`px-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Or continue with
+                  </span>
+                  <div className={`flex-grow border-t ${isDark ? 'border-gray-700' : 'border-gray-300'}`}></div>
                 </div>
               </div>
 
