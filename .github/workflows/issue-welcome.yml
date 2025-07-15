@@ -24,24 +24,21 @@ jobs:
             const ownerName = "sailaja-adapa";
             const ownerUrl = "https://github.com/sailaja-adapa";
 
+            // Check if first time contributor
             const firstTime = context.payload.sender.type === "User" &&
               context.payload.issue.author_association === "FIRST_TIME_CONTRIBUTOR";
 
             let message;
 
             if (firstTime) {
-              message = `👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉
-
-                            If you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
+              message = `👋 Hi @${login}, welcome to [${repoName}](${repoUrl}) and thanks for opening your **first issue**! 🎉\n\nIf you like the project, please ⭐ [star it](${repoUrl}) and follow [${ownerName}](${ownerUrl}) for more awesome work.`;
             } else {
-              message = `Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!
-
-                        Consider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
+              message = `Hey @${login}, thanks for opening an issue on [${repoName}](${repoUrl})!\n\nConsider ⭐ starring the repo and following [${ownerName}](${ownerUrl}) to support the project. 🙌`;
             }
 
             await github.rest.issues.createComment({
               issue_number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: message
+              body: message.trim()
             });
