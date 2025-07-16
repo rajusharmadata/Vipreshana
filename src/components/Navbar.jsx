@@ -164,7 +164,7 @@ const Navbar = () => {
             <img
               src="/logo.png"
               alt="Vipreshana Logo"
-              className="h-12 w-8 inline-block mr-1"
+              className="h-12 inline-block mr-1"
             />
             Vipreshana
           </Link>
@@ -178,7 +178,7 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-6 text-base font-medium">
               <Link
                 to="/about"
-                className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? "text-white" : "text-gray-900"
+                className={`flex items-center gap-2 no-underline hover:text-blue-400 hover:scale-108 hover:shadow-xl p-1 rounded-xl transition ${isDark ? "text-white" : "text-gray-900"
                   }`}
               >
                 <FiInfo className="text-lg" />
@@ -186,7 +186,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/how-it-works"
-                className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? "text-white" : "text-gray-900"
+                className={`flex items-center gap-2 no-underline hover:text-blue-400 hover:scale-108 hover:shadow-xl p-1 rounded-xl transition ${isDark ? "text-white" : "text-gray-900"
                   }`}
               >
                 <FiMap className="text-lg" />
@@ -194,23 +194,14 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/contact"
-                className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? "text-white" : "text-gray-900"
+                className={`flex items-center gap-2 no-underline hover:text-blue-400 hover:scale-108 hover:shadow-xl p-1 rounded-xl transition ${isDark ? "text-white" : "text-gray-900"
                   }`}
               >
                 <FiPhone className="text-lg" />
                 Contact
               </Link>
 
-              {/* Only show Dashboard if logged in */}
-              {isLoggedIn && (
-                <Link
-                  to="/dashboard"
-                  className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
-                >
-                  <FiUser className="text-lg" />
-                  Dashboard
-                </Link>
-              )}
+            
             </div>
 
             {/* Theme Toggle + User Avatar + Mobile Menu Button */}
@@ -388,15 +379,7 @@ const Navbar = () => {
           {/* Only show user navigation when logged in */}
           {isLoggedIn && (
             <>
-              <Link
-                to="/dashboard"
-                onClick={closeMenu}
-                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
-                  }`}
-              >
-                <FiUser className="text-lg" />
-                Dashboard
-              </Link>
+              
 
               <Link
                 to="/profile"
