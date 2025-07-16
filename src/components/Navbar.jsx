@@ -201,16 +201,7 @@ const Navbar = () => {
                 Contact
               </Link>
 
-              {/* Only show Dashboard if logged in */}
-              {/* {isLoggedIn && (
-                <Link
-                  to="/dashboard"
-                  className={`flex items-center gap-2 no-underline hover:text-blue-400 transition ${isDark ? 'text-white' : 'text-gray-900'}`}
-                >
-                  <FiUser className="text-lg" />
-                  Dashboard
-                </Link>
-              )} */}
+            
             </div>
 
             {/* Theme Toggle + User Avatar + Mobile Menu Button */}
@@ -388,15 +379,7 @@ const Navbar = () => {
           {/* Only show user navigation when logged in */}
           {isLoggedIn && (
             <>
-              {/* <Link
-                to="/dashboard"
-                onClick={closeMenu}
-                className={`flex items-center gap-2 no-underline px-4 py-3 rounded-lg transition ${isDark ? "text-white hover:text-blue-400" : "text-gray-900 hover:text-blue-500"
-                  }`}
-              >
-                <FiUser className="text-lg" />
-                Dashboard
-              </Link> */}
+              
 
               <Link
                 to="/profile"
