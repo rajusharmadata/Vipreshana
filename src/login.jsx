@@ -178,15 +178,11 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
         <div className="absolute inset-0 w-full h-full z-0">
           {isDark ? <LiveBackgroundDark /> : <LiveBackgroundLight />}
         </div>
-        <div
-          className={`absolute top-[90px] right-0 bottom-0 left-0 ${
-            isDark ? 'bg-opacity-80' : 'bg-opacity-60'
-          } flex items-center justify-center`} style={{ top: '90px' }}
-        >
+        <div className="relative min-h-screen flex items-center justify-center pt-24">
           <div
             className={`p-10 rounded-2xl shadow-2xl w-96 ${
-              isDark ? 'text-white border border-gray-700' : 'text-gray-900'
-            }`}
+              isDark ? 'text-white' : 'text-gray-900'
+            } mb-16`}
           >
             <h1
               className={`text-4xl font-bold text-center mb-2 ${
@@ -208,10 +204,8 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
                   name="phone"
                   required
                   onChange={handleChange}
-                  className={`mt-1 block w-full border rounded-xl shadow-sm p-3 ${isDark
-                    ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400'
-                    : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
-                  }`}
+                  style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
+                  className={`mt-1 block w-full border rounded-xl shadow-sm p-3 backdrop-blur-sm border-white/40 focus:border-blue-500 focus:ring focus:ring-blue-200 ${isDark ? 'placeholder-white/80' : 'placeholder-gray-700'}`}
                   placeholder="Enter your phone number"
                 />
               </div>
@@ -228,10 +222,8 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
                     name="password"
                     required
                     onChange={handleChange}
-                    className={`block w-full border rounded-xl shadow-sm p-3 ${isDark
-                      ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-400 focus:ring focus:ring-blue-400'
-                      : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring focus:ring-blue-200'
-                    }`}
+                    style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
+                    className={`block w-full border rounded-xl shadow-sm p-3 backdrop-blur-sm border-white/40 focus:border-blue-500 focus:ring focus:ring-blue-200 ${isDark ? 'placeholder-white/80' : 'placeholder-gray-700'}`}
                     placeholder="Enter your password"
                   />
                   <button
@@ -274,16 +266,16 @@ if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formD
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className={`w-full flex items-center justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-medium ${isDark
-                  ? 'bg-gray-700 text-white border border-gray-600 hover:bg-gray-600'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
+                style={{ backgroundColor: 'rgba(255,255,255,0.25)', color: isDark ? '#fff' : '#1a202c' }}
+                className={`w-full flex items-center justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-medium backdrop-blur-sm border-white/40 transition-colors duration-200 ${isDark ? 'placeholder-white/80' : 'placeholder-gray-700'} hover:bg-white/40`}
               >
-                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
-                  <path
-                    d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.522 0-10 4.478-10 10s4.478 10 10 10c8.396 0 10.54-7.752 9.71-11.666l-9.71 0.001z"
-                    fill="#FFC107"
-                  />
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 533.5 544.3">
+                  <g>
+                    <path d="M533.5 278.4c0-17.4-1.6-34.1-4.6-50.2H272v95h146.9c-6.3 34.1-25.1 62.9-53.6 82.2v68h86.7c50.7-46.7 81.5-115.5 81.5-195z" fill="#4285F4"/>
+                    <path d="M272 544.3c72.6 0 133.7-24.1 178.2-65.5l-86.7-68c-24.1 16.1-54.9 25.7-91.5 25.7-70.4 0-130.1-47.6-151.5-111.5h-89.2v69.9C75.7 486.1 167.2 544.3 272 544.3z" fill="#34A853"/>
+                    <path d="M120.5 324.9c-10.4-30.1-10.4-62.7 0-92.8v-69.9h-89.2c-18.7 37.3-29.3 79.1-29.3 124.3s10.6 87 29.3 124.3l89.2-69.9z" fill="#FBBC05"/>
+                    <path d="M272 107.7c39.6 0 75.1 13.6 103.1 40.2l77.4-77.4C405.7 24.1 344.6 0 272 0 167.2 0 75.7 58.2 31.3 147.1l89.2 69.9C141.9 155.3 201.6 107.7 272 107.7z" fill="#EA4335"/>
+                  </g>
                 </svg>
                 Continue with Google
               </button>
