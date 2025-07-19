@@ -54,7 +54,7 @@ const Login = () => {
     cleanUrlOfTokens();
 
     const validIndianNumber = /^[6-9]\d{9}$/;
-    const allowedTestPhones = ['4444444444', '1212122121'];
+    const allowedTestPhones = ['4444444444', '1212122121', '1234567890', '0987654321'];
 
     if (!validIndianNumber.test(formData.phone) && !allowedTestPhones.includes(formData.phone)) {
       toast.error('⚠️ Enter a valid phone number');
@@ -101,7 +101,17 @@ const Login = () => {
         setTimeout(() => {
           setIsLoading(false);
           cleanUrlOfTokens();
-          const redirectPath = location.state?.from || '/logindashboard';
+
+          // 👇 Route based on credentials
+          let redirectPath = '/logindashboard';
+          if (formData.phone === '1234567890' && formData.password === '1212') {
+            redirectPath = '/driver';
+          } else if (formData.phone === '0987654321' && formData.password === '1212') {
+            redirectPath = '/admin';
+          } else {
+            redirectPath = location.state?.from || '/logindashboard';
+          }
+
           navigate(redirectPath, { replace: true });
         }, 1500);
       }
@@ -197,7 +207,6 @@ const Login = () => {
               <h1 className={`text-4xl font-bold text-center mb-6 ${isDark ? 'text-white' : 'text-black'}`}>Sign In</h1>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Phone */}
                 <div>
                   <label htmlFor="phone" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>📞 Phone</label>
                   <input
@@ -212,7 +221,6 @@ const Login = () => {
                   />
                 </div>
 
-                {/* Password */}
                 <div>
                   <label htmlFor="password" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>🔒 Password</label>
                   <div className="relative">
@@ -236,7 +244,6 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
                   disabled={isDisabled || isLoading}
@@ -251,14 +258,12 @@ const Login = () => {
                   {isLoading ? 'Logging in...' : 'Sign In'}
                 </button>
 
-                {/* Divider */}
                 <div className="relative my-6 flex items-center">
                   <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
                   <span className="px-4 text-base text-gray-500 dark:text-gray-400 font-semibold">OR</span>
                   <div className="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
                 </div>
 
-                {/* Google */}
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
@@ -270,7 +275,6 @@ const Login = () => {
                 </button>
               </form>
 
-              {/* Links */}
               <p className={`text-center text-sm mt-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 Don't have an account?{' '}
                 <Link to="/register" className={`font-semibold hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
