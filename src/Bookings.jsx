@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "./context/ThemeContext";
 import { motion } from "framer-motion";
 import Navbar from "./components/Navbar";
-import PageMeta from './components/Pagemeta';
+import PageMeta from "./components/Pagemeta";
 
-const API_BASE_URL = 'https://vipreshana-3.onrender.com';
+const API_BASE_URL = "https://vipreshana-3.onrender.com";
 
 const UserBookings = () => {
   const { theme } = useTheme();
@@ -19,12 +19,12 @@ const UserBookings = () => {
     const fetchUserBookings = async () => {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user"));
-        const phone = storedUser?.phone;
-
-        if (!phone || typeof phone !== "string" || phone.trim() === "") {
-          setError("Phone number not found or invalid in local storage");
+        if (!storedUser || !storedUser.phone) {
+          setError("User not found. Please log in again.");
           return;
         }
+
+        const phone = storedUser.phone;
 
         const response = await fetch(`${API_BASE_URL}/api/bookings/${phone}`);
 
@@ -34,21 +34,21 @@ const UserBookings = () => {
         }
 
         if (!response.ok) {
-          setError("Failed to fetch bookings. Please try again later.");
-          return;
+          throw new Error("Failed to fetch bookings.");
         }
 
         const data = await response.json();
 
-        if (!Array.isArray(data)) {
-          setError("Invalid booking data format received.");
-          return;
+        const bookingsData = Array.isArray(data) ? data : data.bookings || [];
+
+        if (!Array.isArray(bookingsData)) {
+          throw new Error("Invalid data format received from server.");
         }
 
-        setBookings(data);
+        setBookings(bookingsData);
       } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Something went wrong while fetching bookings.");
+        console.error("Booking fetch error:", err);
+        setError("Something went wrong while fetching your bookings.");
       }
     };
 
@@ -92,7 +92,7 @@ const UserBookings = () => {
 
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-          {bookings.length === 0 ? (
+          {bookings.length === 0 && !error ? (
             <p className={`text-center ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
               No bookings found.
             </p>
@@ -114,7 +114,10 @@ const UserBookings = () => {
                     "#", "Name", "Phone", "Pickup Location", "Drop-off Location",
                     "Vehicle Type", "Cost", "Created At", "Status", "Track"
                   ].map((col, idx) => (
-                    <th key={idx} className={`px-6 py-4 border ${isDarkMode ? "border-gray-600" : "border-black"}`}>
+                    <th
+                      key={idx}
+                      className={`px-6 py-4 border ${isDarkMode ? "border-gray-600" : "border-black"}`}
+                    >
                       {col}
                     </th>
                   ))}
@@ -137,8 +140,10 @@ const UserBookings = () => {
                     <td className={`px-6 py-4 border ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-900 border-black"}`}>{booking.pickupLocation}</td>
                     <td className={`px-6 py-4 border ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-900 border-black"}`}>{booking.dropoffLocation}</td>
                     <td className={`px-6 py-4 border ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-900 border-black"}`}>{booking.vehicleType}</td>
-                    <td className={`px-6 py-4 border font-semibold ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-800 border-black"}`}>{booking.estimatedCost.toFixed(2)} INR</td>
-                    <td className={`px-6 py-4 border ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-900 border-black"}`}>{new Date(booking.bookingDate).toLocaleString()}</td>
+                    <td className={`px-6 py-4 border font-semibold ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-800 border-black"}`}>{booking.estimatedCost?.toFixed(2)} INR</td>
+                    <td className={`px-6 py-4 border ${isDarkMode ? "text-gray-200 border-gray-600" : "text-gray-900 border-black"}`}>
+                      {booking.bookingDate ? new Date(booking.bookingDate).toLocaleString() : "N/A"}
+                    </td>
                     <td className={`px-6 py-4 border ${isDarkMode ? "border-gray-600" : "border-black"}`}>
                       <span className={`font-bold ${booking.status === "pending" ? "text-red-500" : "text-green-500"}`}>
                         {booking.status}
