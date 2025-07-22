@@ -46,7 +46,7 @@ const About = () => {
       >
         {/* Title */}
         <motion.h1
-          className="text-4xl md:text-5xl font-bold text-center mb-4 tracking-tight"
+          className="text-4xl md:text-5xl py-4 font-bold text-center mb-4 tracking-tight"
           variants={itemVariants}
         >
           Empowering Smarter Deliveries with Vipreshana 🚛✨

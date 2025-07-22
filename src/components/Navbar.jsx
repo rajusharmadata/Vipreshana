@@ -158,7 +158,7 @@ const Navbar = () => {
           {/* Left: Logo */}
           <Link
             to="/"
-            className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent hover:no-underline focus:no-underline visited:text-transparent focus:text-transparent"
+            className="no-underline font-extrabold text-2xl tracking-tight bg-gradient-to-r from-purple-600 to-purple-900 bg-clip-text text-transparent hover:no-underline hover:text-purple-600 visited:text-transparent focus:text-transparent"
             onClick={closeMenu}
           >
             <img
