@@ -137,6 +137,23 @@ http://localhost:5000/
 ```
 ---
 
+## 🔁 Workflow
+- The user is required to register using their Phone Number for authentication.
+
+ <img width="1901" height="881" alt="image" src="https://github.com/user-attachments/assets/83318c08-f520-4b6f-befc-b786a3a52bb6" />
+
+- An OTP is sent to the provided mobile number for verification.
+
+<img width="860" height="675" alt="image" src="https://github.com/user-attachments/assets/2280890d-5ae1-4e87-b599-c8dd103b2e6e" />
+
+- Upon successful registration a confirmation mail will be sent to the mail given by the user in registraion form.
+
+ <img width="294" height="608" alt="image" src="https://github.com/user-attachments/assets/7bdaae63-786c-4436-a3e4-5ff7f11d4740" />
+
+- After getting this mail the user can start exploring Vipreshana and its benefits
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE.txt)
