@@ -141,9 +141,6 @@ const About = () => {
           </button>
         </motion.div>
       </motion.div>
-      
-      {/* FAQ Section */}
-      <FAQSection isDark={isDark} />
       {showScrollTop && (
             <motion.button
               onClick={scrollToTop}
