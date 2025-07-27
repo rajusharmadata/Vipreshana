@@ -362,7 +362,7 @@ const Login = () => {
                       <path d="M533.5..." fill="#4285F4" />
                     </g>
                   </svg>
-                  <span className="pr-2">
+                  <span className="pr-1.5">
                     <FcGoogle size={24} />
                   </span>
                   Continue with Google
